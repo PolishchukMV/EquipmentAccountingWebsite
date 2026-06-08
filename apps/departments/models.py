@@ -43,7 +43,8 @@ class Department(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name='Руководитель'
+        verbose_name='Руководитель',
+        related_name='headed_departments'
     )
     description = models.TextField(
         blank=True,

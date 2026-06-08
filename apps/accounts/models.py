@@ -38,7 +38,8 @@ class CustomUser(AbstractUser):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        verbose_name='Подразделение'
+        verbose_name='Подразделение',
+        related_name='department_users'
     )
     phone = models.CharField(
         max_length=20,
@@ -58,6 +59,22 @@ class CustomUser(AbstractUser):
     updated_at = models.DateTimeField(
         auto_now=True,
         verbose_name='Дата обновления'
+    )
+    
+    # Поля для совместимости с AbstractUser
+    groups = models.ManyToManyField(
+        'auth.Group',
+        verbose_name='Группы',
+        blank=True,
+        related_name='custom_user_set',
+        related_query_name='custom_user'
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        verbose_name='Права',
+        blank=True,
+        related_name='custom_user_set',
+        related_query_name='custom_user'
     )
     
     class Meta:
