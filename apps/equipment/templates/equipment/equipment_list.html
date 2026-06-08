@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Список оборудования - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Оборудование</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        {% if user.is_authenticated and user.is_manager %}
+            <a href="{% url 'equipment:equipment_create' %}" class="btn btn-primary">
+                Добавить оборудование
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Поиск и фильтрация -->
+<div class="filters-panel mb-4">
+    <form method="get" action="{% url 'equipment:equipment_search' %}" class="row g-3">
+        <div class="col-md-8">
+            <input type="text" name="q" class="form-control" placeholder="Поиск по инвентарному номеру, названию, серийному номеру...">
+        </div>
+        <div class="col-md-4">
+            <button type="submit" class="btn btn-secondary w-100">Поиск</button>
+        </div>
+    </form>
+</div>
+
+<!-- Список оборудования -->
+<div class="row">
+    {% if equipment_list %}
+        {% for equipment in equipment_list %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card equipment-item">
+                    {% if equipment.photo %}
+                        <img src="{{ equipment.photo.url }}" class="card-img-top equipment-photo" alt="{{ equipment.name }}">
+                    {% else %}
+                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <span class="text-white">Нет фото</span>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ equipment.name }}</h5>
+                        <p class="card-text">
+                            <strong>Инв. номер:</strong> {{ equipment.inventory_number }}<br>
+                            <strong>Категория:</strong> {{ equipment.category.name|default:"Не указана" }}<br>
+                            <strong>Статус:</strong> 
+                            <span class="status-badge status-{{ equipment.status }}">
+                                {{ equipment.get_status_display }}
+                            </span>
+                        </p>
+                        <a href="{% url 'equipment:equipment_detail' equipment.pk %}" class="btn btn-outline-primary btn-sm">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Оборудование не найдено. Добавьте новое оборудование.
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Пагинация -->
+{% if is_paginated %}
+    <nav aria-label="Пагинация">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; Первая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+                </li>
+            {% endif %}
+            
+            <li class="page-item active">
+                <span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+            </li>
+            
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}
