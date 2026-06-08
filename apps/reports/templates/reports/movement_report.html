@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчёт по перемещениям - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Отчёт по перемещениям оборудования</h1>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Дата</th>
+                        <th>Оборудование</th>
+                        <th>Откуда</th>
+                        <th>Куда</th>
+                        <th>Получатель</th>
+                        <th>Пользователь</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if movements %}
+                        {% for movement in movements %}
+                            <tr>
+                                <td>{{ movement.timestamp|date:"d.m.Y H:i" }}</td>
+                                <td>{{ movement.equipment.name }}</td>
+                                <td>{{ movement.from_department.name|default:"-" }}</td>
+                                <td>{{ movement.to_department.name|default:"-" }}</td>
+                                <td>{{ movement.received_by.get_full_name|default:"-" }}</td>
+                                <td>{{ movement.user.get_full_name|default:"-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                Перемещений не найдено
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчёты - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Отчёты</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-box display-4 text-primary mb-3"></i>
+                <h5>Отчёт по оборудованию</h5>
+                <p class="text-muted">Список всего оборудования с детальной информацией</p>
+                <a href="{% url 'reports:inventory_report' %}" class="btn btn-primary">
+                    Сформировать
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-arrow-left-right display-4 text-success mb-3"></i>
+                <h5>Отчёт по перемещениям</h5>
+                <p class="text-muted">История перемещений оборудования между подразделениями</p>
+                <a href="{% url 'reports:movement_report' %}" class="btn btn-success">
+                    Сформировать
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-wrench display-4 text-warning mb-3"></i>
+                <h5>Отчёт по обслуживанию</h5>
+                <p class="text-muted">Статистика обслуживания и ремонтов оборудования</p>
+                <a href="{% url 'reports:maintenance_report' %}" class="btn btn-warning">
+                    Сформировать
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-speedometer2 display-4 text-info mb-3"></i>
+                <h5>Отчёт по статусам</h5>
+                <p class="text-muted">Распределение оборудования по статусам</p>
+                <a href="{% url 'reports:status_report' %}" class="btn btn-info">
+                    Сформировать
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-currency-dollar display-4 text-danger mb-3"></i>
+                <h5>Финансовый отчёт</h5>
+                <p class="text-muted">Стоимость оборудования и затрат на обслуживание</p>
+                <a href="{% url 'reports:financial_report' %}" class="btn btn-danger">
+                    Сформировать
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-clock-history display-4 text-secondary mb-3"></i>
+                <h5>История отчётов</h5>
+                <p class="text-muted">Просмотр ранее сформированных отчётов</p>
+                <a href="{% url 'reports:report_history' %}" class="btn btn-secondary">
+                    Просмотреть
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

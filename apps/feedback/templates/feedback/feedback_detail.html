@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ feedback.subject }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>{{ feedback.subject }}</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{% url 'feedback:feedback_list' %}" class="btn btn-secondary">
+            Назад к списку
+        </a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Сообщение</h5>
+        <span class="badge badge-{{ feedback.get_status_display }}">
+            {{ feedback.get_status_display }}
+        </span>
+    </div>
+    <div class="card-body">
+        <p><strong>От:</strong> {{ feedback.author.get_full_name|default:feedback.email }}</p>
+        <p><strong>Email:</strong> {{ feedback.email }}</p>
+        <p><strong>Дата:</strong> {{ feedback.timestamp|date:"d.m.Y H:i" }}</p>
+        
+        <hr>
+        
+        <h5>Текст сообщения:</h5>
+        <p>{{ feedback.message|linebreaks }}</p>
+        
+        {% if feedback.response %}
+            <hr>
+            
+            <div class="alert alert-success">
+                <h5>Ответ:</h5>
+                <p>{{ feedback.response|linebreaks }}</p>
+                <small class="text-muted">
+                    Ответил: {{ feedback.responded_by.get_full_name|default:feedback.responded_by.username }}
+                    ({{ feedback.responded_at|date:"d.m.Y H:i" }})
+                </small>
+            </div>
+        {% endif %}
+    </div>
+    <div class="card-footer">
+        {% if user.is_authenticated and user.is_manager and not feedback.response %}
+            <a href="{% url 'feedback:feedback_respond' feedback.pk %}" class="btn btn-primary">
+                Ответить
+            </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

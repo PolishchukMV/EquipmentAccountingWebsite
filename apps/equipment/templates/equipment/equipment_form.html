@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}{% if object %}Редактирование{% else %}Создание{% endif %} оборудования - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{% if object %}Редактирование{% else %}Добавление{% endif %} оборудования</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Основная информация -->
+                    <h5 class="mb-3">Основная информация</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.inventory_number.id_for_label }}" class="form-label">
+                                Инвентарный номер *
+                            </label>
+                            {{ form.inventory_number|add_class:"form-control" }}
+                            {% if form.inventory_number.errors %}
+                                <div class="text-danger">{{ form.inventory_number.errors }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">
+                                Наименование *
+                            </label>
+                            {{ form.name|add_class:"form-control" }}
+                            {% if form.name.errors %}
+                                <div class="text-danger">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.category.id_for_label }}" class="form-label">Категория</label>
+                            {{ form.category|add_class:"form-select" }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.status.id_for_label }}" class="form-label">Статус</label>
+                            {{ form.status|add_class:"form-select" }}
+                        </div>
+                    </div>
+                    
+                    <!-- Технические данные -->
+                    <h5 class="mb-3 mt-4">Технические данные</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.serial_number.id_for_label }}" class="form-label">Серийный номер</label>
+                            {{ form.serial_number|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.manufacturer.id_for_label }}" class="form-label">Производитель</label>
+                            {{ form.manufacturer|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.model.id_for_label }}" class="form-label">Модель</label>
+                            {{ form.model|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.purchase_date.id_for_label }}" class="form-label">Дата покупки</label>
+                            {{ form.purchase_date|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.purchase_price.id_for_label }}" class="form-label">Цена покупки (руб.)</label>
+                            {{ form.purchase_price|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.warranty_period.id_for_label }}" class="form-label">Гарантийный срок (месяцев)</label>
+                            {{ form.warranty_period|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    
+                    <!-- Расположение и ответственность -->
+                    <h5 class="mb-3 mt-4">Расположение и ответственность</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.department.id_for_label }}" class="form-label">Подразделение</label>
+                            {{ form.department|add_class:"form-select" }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.responsible_person.id_for_label }}" class="form-label">Ответственное лицо</label>
+                            {{ form.responsible_person|add_class:"form-select" }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.location.id_for_label }}" class="form-label">Местоположение</label>
+                        {{ form.location|add_class:"form-control" }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.notes.id_for_label }}" class="form-label">Примечания</label>
+                        {{ form.notes|add_class:"form-control"|add_attr:"rows:3" }}
+                    </div>
+                    
+                    <!-- Файлы -->
+                    <h5 class="mb-3 mt-4">Файлы</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="{{ form.photo.id_for_label }}" class="form-label">Фотография</label>
+                            {{ form.photo|add_class:"form-control" }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.document.id_for_label }}" class="form-label">Документ</label>
+                            {{ form.document|add_class:"form-control" }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'equipment:equipment_list' %}" class="btn btn-secondary">
+                            Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            {% if object %}Сохранить{% else %}Создать{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

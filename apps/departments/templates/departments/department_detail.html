@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ department.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ department.name }}</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th width="30%">Код:</th>
+                        <td>{{ department.code }}</td>
+                    </tr>
+                    <tr>
+                        <th>Родительское подразделение:</th>
+                        <td>{{ department.parent.name|default:"Нет" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Руководитель:</th>
+                        <td>{{ department.head.get_full_name|default:"Не назначен" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Количество сотрудников:</th>
+                        <td>{{ department.get_employee_count }}</td>
+                    </tr>
+                </table>
+                
+                {% if department.description %}
+                    <h5>Описание:</h5>
+                    <p>{{ department.description|linebreaks }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                {% if user.is_authenticated and user.is_admin %}
+                    <a href="{% url 'departments:department_update' department.pk %}" class="btn btn-primary">
+                        Редактировать
+                    </a>
+                    <a href="{% url 'departments:department_employees' department.pk %}" class="btn btn-info">
+                        Сотрудники
+                    </a>
+                    <a href="{% url 'departments:department_equipment' department.pk %}" class="btn btn-info">
+                        Оборудование
+                    </a>
+                {% endif %}
+                <a href="{% url 'departments:department_list' %}" class="btn btn-secondary">
+                    Назад к списку
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

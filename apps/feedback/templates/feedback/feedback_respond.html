@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Ответить на сообщение - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Ответ на сообщение</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Тема:</strong> {{ feedback.subject }}<br>
+                    <strong>От:</strong> {{ feedback.author.get_full_name|default:feedback.email }}
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="response" class="form-label">Ваш ответ *</label>
+                        <textarea name="response" id="response" class="form-control" rows="5" required></textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'feedback:feedback_detail' feedback.pk %}" class="btn btn-secondary">
+                            Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Отправить ответ
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

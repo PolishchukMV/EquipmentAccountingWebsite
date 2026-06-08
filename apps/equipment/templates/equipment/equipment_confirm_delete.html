@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Удаление оборудования - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Подтверждение удаления</h4>
+            </div>
+            <div class="card-body">
+                <p class="lead">Вы действительно хотите удалить оборудование?</p>
+                
+                <div class="alert alert-warning">
+                    <strong>Внимание!</strong> Это действие нельзя отменить.
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5>{{ equipment.name }}</h5>
+                        <p><strong>Инвентарный номер:</strong> {{ equipment.inventory_number }}</p>
+                        <p><strong>Категория:</strong> {{ equipment.category.name|default:"Не указана" }}</p>
+                        <p><strong>Статус:</strong> {{ equipment.get_status_display }}</p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'equipment:equipment_detail' equipment.pk %}" class="btn btn-secondary">
+                            Отмена
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            Удалить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

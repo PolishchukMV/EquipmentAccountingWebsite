@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Генерация отчёта - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Генерация отчёта</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="report_type" class="form-label">Тип отчёта</label>
+                        <select name="report_type" id="report_type" class="form-select">
+                            <option value="inventory">По оборудованию</option>
+                            <option value="movement">По перемещениям</option>
+                            <option value="maintenance">По обслуживанию</option>
+                            <option value="status">По статусам</option>
+                            <option value="financial">Финансовый</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="date_from" class="form-label">Дата с</label>
+                            <input type="date" name="date_from" id="date_from" class="form-control">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="date_to" class="form-label">Дата по</label>
+                            <input type="date" name="date_to" id="date_to" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="format" class="form-label">Формат</label>
+                        <select name="format" id="format" class="form-select">
+                            <option value="pdf">PDF</option>
+                            <option value="xlsx">Excel (XLSX)</option>
+                            <option value="docx">Word (DOCX)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'reports:reports_dashboard' %}" class="btn btn-secondary">
+                            Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            Сформировать отчёт
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

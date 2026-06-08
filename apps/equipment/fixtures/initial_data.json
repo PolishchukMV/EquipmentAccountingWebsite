@@ -1,0 +1,92 @@
+[
+  {
+    "model": "equipment.category",
+    "pk": 1,
+    "fields": {
+      "name": "Компьютерная техника",
+      "code": "COMP",
+      "description": "Компьютеры, ноутбуки и периферийное оборудование",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "equipment.category",
+    "pk": 2,
+    "fields": {
+      "name": "Офисное оборудование",
+      "code": "OFFICE",
+      "description": "Принтеры, сканеры и другая оргтехника",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "equipment.category",
+    "pk": 3,
+    "fields": {
+      "name": "Мебель",
+      "code": "FURN",
+      "description": "Офисная мебель",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "equipment.equipment",
+    "pk": 1,
+    "fields": {
+      "inventory_number": "000001",
+      "name": "Ноутбук Dell Latitude 5420",
+      "category": 1,
+      "status": "in_use",
+      "serial_number": "DL-2024-001",
+      "manufacturer": "Dell",
+      "model": "Latitude 5420",
+      "purchase_date": "2024-01-15",
+      "purchase_price": 85000,
+      "warranty_period": 24,
+      "location": "Кабинет 301",
+      "notes": "Основной рабочий ноутбук",
+      "created_at": "2024-01-15T10:00:00Z",
+      "updated_at": "2024-01-15T10:00:00Z"
+    }
+  },
+  {
+    "model": "equipment.equipment",
+    "pk": 2,
+    "fields": {
+      "inventory_number": "000002",
+      "name": "Принтер HP LaserJet Pro",
+      "category": 2,
+      "status": "in_use",
+      "serial_number": "HP-2024-002",
+      "manufacturer": "HP",
+      "model": "LaserJet Pro M404dn",
+      "purchase_date": "2024-02-01",
+      "purchase_price": 35000,
+      "warranty_period": 12,
+      "location": "Копировальная комната",
+      "notes": "Сетевой принтер для отдела",
+      "created_at": "2024-02-01T09:00:00Z",
+      "updated_at": "2024-02-01T09:00:00Z"
+    }
+  },
+  {
+    "model": "equipment.equipment",
+    "pk": 3,
+    "fields": {
+      "inventory_number": "000003",
+      "name": "Стол офисный",
+      "category": 3,
+      "status": "in_use",
+      "serial_number": "",
+      "manufacturer": "IKEA",
+      "model": "BEKANT",
+      "purchase_date": "2024-01-20",
+      "purchase_price": 15000,
+      "warranty_period": 60,
+      "location": "Кабинет 302",
+      "notes": "",
+      "created_at": "2024-01-20T14:00:00Z",
+      "updated_at": "2024-01-20T14:00:00Z"
+    }
+  }
+]

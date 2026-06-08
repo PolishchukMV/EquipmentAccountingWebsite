@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ equipment.name }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Основная информация -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">{{ equipment.name }}</h4>
+            </div>
+            <div class="card-body">
+                {% if equipment.photo %}
+                    <img src="{{ equipment.photo.url }}" class="img-fluid rounded mb-3" alt="{{ equipment.name }}" style="max-height: 400px;">
+                {% endif %}
+                
+                <table class="table table-striped">
+                    <tr>
+                        <th width="30%">Инвентарный номер:</th>
+                        <td>{{ equipment.inventory_number }}</td>
+                    </tr>
+                    <tr>
+                        <th>Категория:</th>
+                        <td>{{ equipment.category.name|default:"Не указана" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Статус:</th>
+                        <td>
+                            <span class="status-badge status-{{ equipment.status }}">
+                                {{ equipment.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Серийный номер:</th>
+                        <td>{{ equipment.serial_number|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Производитель:</th>
+                        <td>{{ equipment.manufacturer|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Модель:</th>
+                        <td>{{ equipment.model|default:"Не указана" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Дата покупки:</th>
+                        <td>{{ equipment.purchase_date|default:"Не указана" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Цена покупки:</th>
+                        <td>{{ equipment.purchase_price|default:"Не указана" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Гарантийный срок:</th>
+                        <td>{{ equipment.warranty_period|default:"Не указан" }} месяцев</td>
+                    </tr>
+                    <tr>
+                        <th>Подразделение:</th>
+                        <td>{{ equipment.department.name|default:"Не назначено" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Ответственное лицо:</th>
+                        <td>{{ equipment.responsible_person.get_full_name|default:"Не назначено" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Местоположение:</th>
+                        <td>{{ equipment.location|default:"Не указано" }}</td>
+                    </tr>
+                </table>
+                
+                {% if equipment.notes %}
+                    <h5>Примечания:</h5>
+                    <p>{{ equipment.notes|linebreaks }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                {% if user.is_authenticated and user.is_manager %}
+                    <a href="{% url 'equipment:equipment_update' equipment.pk %}" class="btn btn-primary">
+                        Редактировать
+                    </a>
+                    <a href="{% url 'equipment:equipment_delete' equipment.pk %}" class="btn btn-danger" data-confirm-delete="Вы уверены, что хотите удалить это оборудование?">
+                        Удалить
+                    </a>
+                    <a href="{% url 'equipment:equipment_history' equipment.pk %}" class="btn btn-info">
+                        История изменений
+                    </a>
+                {% endif %}
+                <a href="{% url 'equipment:equipment_list' %}" class="btn btn-secondary">
+                    Назад к списку
+                </a>
+            </div>
+        </div>
+        
+        <!-- Аксессуары -->
+        {% if equipment.accessories.all %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Комплектующие и аксессуары</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Количество</th>
+                                <th>Серийный номер</th>
+                                <th>Примечания</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for accessory in equipment.accessories.all %}
+                                <tr>
+                                    <td>{{ accessory.name }}</td>
+                                    <td>{{ accessory.quantity }}</td>
+                                    <td>{{ accessory.serial_number|default:"-" }}</td>
+                                    <td>{{ accessory.notes|default:"-" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Быстрые действия -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                {% if user.is_authenticated and user.is_manager %}
+                    <form method="post" action="{% url 'equipment:equipment_status' equipment.pk %}" class="mb-3">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Изменить статус:</label>
+                            <select name="status" class="form-select mb-2">
+                                {% for value, label in equipment.STATUS_CHOICES %}
+                                    <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-success w-100">Применить</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Документ -->
+        {% if equipment.document %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Документы</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ equipment.document.url }}" class="btn btn-outline-primary w-100" download>
+                        Скачать документ
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

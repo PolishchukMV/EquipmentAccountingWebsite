@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Финансовый отчёт - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Финансовый отчёт</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <h5>Стоимость оборудования</h5>
+                <h2>{{ equipment_total }} руб.</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h5>Затраты на обслуживание</h5>
+                <h2>{{ maintenance_total }} руб.</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h5>Итого</h5>
+                <h2>{{ grand_total }} руб.</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Оборудование по подразделениям</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Данные по стоимости оборудования в разрезе подразделений</p>
+                <ul class="list-group">
+                    {% for dept in departments %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ dept.name }}
+                            <span class="badge bg-primary rounded-pill">{{ dept.total_price }} руб.</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Обслуживание по типам</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Затраты на обслуживание по типам работ</p>
+                <ul class="list-group">
+                    {% for maintenance in maintenance_by_type %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ maintenance.get_type_display }}
+                            <span class="badge bg-warning rounded-pill">{{ maintenance.total_cost }} руб.</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

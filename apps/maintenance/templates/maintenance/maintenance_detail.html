@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ maintenance.equipment.name }} - Обслуживание - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Обслуживание: {{ maintenance.equipment.name }}</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <tr>
+                        <th width="30%">Тип обслуживания:</th>
+                        <td>{{ maintenance.get_type_display }}</td>
+                    </tr>
+                    <tr>
+                        <th>Статус:</th>
+                        <td>
+                            <span class="badge badge-{{ maintenance.get_status_display }}">
+                                {{ maintenance.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Дата начала:</th>
+                        <td>{{ maintenance.start_date }}</td>
+                    </tr>
+                    <tr>
+                        <th>Дата окончания:</th>
+                        <td>{{ maintenance.end_date|default:"В процессе" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Исполнитель:</th>
+                        <td>{{ maintenance.service_provider|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Стоимость (руб.):</th>
+                        <td>{{ maintenance.cost|default:"Не указана" }}</td>
+                    </tr>
+                </table>
+                
+                {% if maintenance.description %}
+                    <h5>Описание работ:</h5>
+                    <p>{{ maintenance.description|linebreaks }}</p>
+                {% endif %}
+                
+                {% if maintenance.results %}
+                    <h5>Результаты:</h5>
+                    <p>{{ maintenance.results|linebreaks }}</p>
+                {% endif %}
+            </div>
+            <div class="card-footer">
+                {% if user.is_authenticated and user.is_manager and maintenance.status != 'completed' %}
+                    <form method="post" action="{% url 'maintenance:maintenance_complete' maintenance.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success">
+                            Завершить обслуживание
+                        </button>
+                    </form>
+                {% endif %}
+                <a href="{% url 'maintenance:maintenance_list' %}" class="btn btn-secondary">
+                    Назад к списку
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

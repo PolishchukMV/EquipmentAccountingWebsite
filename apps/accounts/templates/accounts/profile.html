@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" class="rounded-circle mb-3" alt="Аватар" style="width: 150px; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div class="rounded-circle bg-secondary d-inline-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px;">
+                        <span class="text-white display-4">{{ user.username|first|upper }}</span>
+                    </div>
+                {% endif %}
+                <h4>{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+                <span class="badge bg-primary">{{ user.get_role_display }}</span>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Информация</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <th>Телефон:</th>
+                        <td>{{ user.phone|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Подразделение:</th>
+                        <td>{{ user.department.name|default:"Не указано" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Дата регистрации:</th>
+                        <td>{{ user.date_joined|date:"d.m.Y" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Последний вход:</th>
+                        <td>{{ user.last_login|date:"d.m.Y H:i"|default:"Не входил" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Уведомления</h5>
+            </div>
+            <div class="card-body">
+                {% if notifications %}
+                    <div class="list-group">
+                        {% for notification in notifications %}
+                            <div class="list-group-item {% if notification.is_read %}list-group-item-light{% else %}list-group-item-warning{% endif %}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ notification.message }}</h6>
+                                    <small>{{ notification.timestamp|date:"d.m.Y H:i" }}</small>
+                                </div>
+                                {% if not notification.is_read %}
+                                    <span class="badge bg-warning">Новое</span>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">Уведомлений нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчёт по оборудованию - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Отчёт по оборудованию</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="?format=xlsx" class="btn btn-success">
+            <i class="bi bi-file-earmark-excel"></i> Экспорт в Excel
+        </a>
+        <a href="?format=docx" class="btn btn-primary">
+            <i class="bi bi-file-earmark-word"></i> Экспорт в DOCX
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Инв. номер</th>
+                        <th>Наименование</th>
+                        <th>Категория</th>
+                        <th>Статус</th>
+                        <th>Подразделение</th>
+                        <th>Ответственное лицо</th>
+                        <th>Дата покупки</th>
+                        <th>Цена</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if equipment_list %}
+                        {% for equipment in equipment_list %}
+                            <tr>
+                                <td>{{ equipment.inventory_number }}</td>
+                                <td>{{ equipment.name }}</td>
+                                <td>{{ equipment.category.name|default:"-" }}</td>
+                                <td>
+                                    <span class="status-badge status-{{ equipment.status }}">
+                                        {{ equipment.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ equipment.department.name|default:"-" }}</td>
+                                <td>{{ equipment.responsible_person.get_full_name|default:"-" }}</td>
+                                <td>{{ equipment.purchase_date|date:"d.m.Y"|default:"-" }}</td>
+                                <td>{{ equipment.purchase_price|default:"-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                Оборудование не найдено
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

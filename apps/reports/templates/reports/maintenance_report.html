@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчёт по обслуживанию - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Отчёт по обслуживанию оборудования</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <h5>Всего записей</h5>
+                <h2>{{ maintenances.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <h5>Завершено</h5>
+                <h2>{{ maintenances|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-warning text-dark">
+            <div class="card-body text-center">
+                <h5>Общая стоимость</h5>
+                <h2>{{ total_cost }} руб.</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Дата начала</th>
+                        <th>Оборудование</th>
+                        <th>Тип</th>
+                        <th>Статус</th>
+                        <th>Исполнитель</th>
+                        <th>Стоимость</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if maintenances %}
+                        {% for maintenance in maintenances %}
+                            <tr>
+                                <td>{{ maintenance.start_date|date:"d.m.Y" }}</td>
+                                <td>{{ maintenance.equipment.name }}</td>
+                                <td>{{ maintenance.get_type_display }}</td>
+                                <td>
+                                    <span class="badge badge-{{ maintenance.get_status_display }}">
+                                        {{ maintenance.get_status_display }}
+                                    </span>
+                                </td>
+                                <td>{{ maintenance.service_provider|default:"-" }}</td>
+                                <td>{{ maintenance.cost|default:"-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">
+                                Записей об обслуживании не найдено
+                            </td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

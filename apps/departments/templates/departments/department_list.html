@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Подразделения - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Подразделения</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        {% if user.is_authenticated and user.is_admin %}
+            <a href="{% url 'departments:department_create' %}" class="btn btn-primary">
+                Добавить подразделение
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    {% if departments %}
+        {% for department in departments %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ department.name }}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">Код: {{ department.code }}</small>
+                        </p>
+                        {% if department.head %}
+                            <p><strong>Руководитель:</strong> {{ department.head.get_full_name }}</p>
+                        {% endif %}
+                        <p>
+                            <strong>Сотрудников:</strong> {{ department.get_employee_count }}
+                        </p>
+                        <a href="{% url 'departments:department_detail' department.pk %}" class="btn btn-outline-primary btn-sm">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Подразделения не найдены.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

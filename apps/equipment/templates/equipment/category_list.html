@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Категории оборудования - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Категории оборудования</h1>
+    </div>
+</div>
+
+<div class="row">
+    {% if categories %}
+        {% for category in categories %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ category.name }}</h5>
+                        <p class="card-text">{{ category.description|default:"Нет описания" }}</p>
+                        <p class="text-muted">
+                            <small>Код: {{ category.code }}</small>
+                        </p>
+                        <a href="{% url 'equipment:category_detail' category.pk %}" class="btn btn-outline-primary btn-sm">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Категории не найдены.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

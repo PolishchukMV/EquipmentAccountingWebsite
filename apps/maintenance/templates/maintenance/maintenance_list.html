@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Обслуживание оборудования - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Обслуживание оборудования</h1>
+    </div>
+    <div class="col-md-6 text-end">
+        {% if user.is_authenticated and user.is_manager %}
+            <a href="{% url 'maintenance:maintenance_create' %}" class="btn btn-primary">
+                Добавить запись
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    {% if maintenances %}
+        {% for maintenance in maintenances %}
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span>{{ maintenance.equipment.name }}</span>
+                        <span class="badge badge-{{ maintenance.get_status_display }}">
+                            {{ maintenance.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Тип обслуживания:</strong> {{ maintenance.get_type_display }}</p>
+                        <p><strong>Дата начала:</strong> {{ maintenance.start_date }}</p>
+                        <p><strong>Дата окончания:</strong> {{ maintenance.end_date|default:"В процессе" }}</p>
+                        <p><strong>Исполнитель:</strong> {{ maintenance.service_provider|default:"Не указан" }}</p>
+                        <a href="{% url 'maintenance:maintenance_detail' maintenance.pk %}" class="btn btn-outline-primary btn-sm">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                Записей об обслуживании нет.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

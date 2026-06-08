@@ -1,0 +1,46 @@
+[
+  {
+    "model": "departments.department",
+    "pk": 1,
+    "fields": {
+      "name": "Администрация",
+      "code": "ADMIN",
+      "description": "Административный отдел",
+      "parent": null,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "departments.department",
+    "pk": 2,
+    "fields": {
+      "name": "IT-отдел",
+      "code": "IT",
+      "description": "Отдел информационных технологий",
+      "parent": null,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "departments.department",
+    "pk": 3,
+    "fields": {
+      "name": "Бухгалтерия",
+      "code": "ACCT",
+      "description": "Бухгалтерский отдел",
+      "parent": null,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  },
+  {
+    "model": "departments.department",
+    "pk": 4,
+    "fields": {
+      "name": "Отдел кадров",
+      "code": "HR",
+      "description": "Отдел управления персоналом",
+      "parent": null,
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  }
+]

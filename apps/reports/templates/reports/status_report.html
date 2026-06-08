@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчёт по статусам - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <h1>Отчёт по статусам оборудования</h1>
+    </div>
+</div>
+
+<div class="row mb-4">
+    {% for stat in status_stats %}
+        <div class="col-md-3">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">{{ stat.status }}</h5>
+                    <h2 class="text-primary">{{ stat.count }}</h2>
+                    <p class="text-muted">единиц</p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Детализация по статусам</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Статус</th>
+                        <th>Количество</th>
+                        <th>Процент</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in status_stats %}
+                        <tr>
+                            <td>
+                                <span class="status-badge status-{{ stat.status }}">
+                                    {{ stat.status }}
+                                </span>
+                            </td>
+                            <td>{{ stat.count }}</td>
+                            <td>
+                                {% with total=0 %}
+                                    {% for s in status_stats %}
+                                        {% if s.status == stat.status %}
+                                            {% widthratio s.count 1 total as percent %}
+                                        {% endif %}
+                                    {% endfor %}
+                                    {{ percent|default:0 }}%
+                                {% endwith %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

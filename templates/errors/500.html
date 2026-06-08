@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Ошибка сервера - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+        <h1 class="display-1 text-danger">500</h1>
+        <h2 class="mb-4">Ошибка сервера</h2>
+        <p class="lead mb-4">Произошла внутренняя ошибка сервера. Пожалуйста, обратитесь к администратору.</p>
+        <a href="/" class="btn btn-primary btn-lg">
+            На главную
+        </a>
+    </div>
+</div>
+{% endblock %}
