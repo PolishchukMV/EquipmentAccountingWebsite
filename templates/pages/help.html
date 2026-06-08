@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Помощь - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <h1>Помощь и поддержка</h1>
+        <p class="lead">Информация по использованию системы</p>
+        
+        <hr>
+        
+        <h2>Часто задаваемые вопросы</h2>
+        
+        <div class="accordion" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                        Как добавить новое оборудование?
+                    </button>
+                </h2>
+                <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Перейдите в раздел "Оборудование" и нажмите кнопку "Добавить оборудование". 
+                        Заполните все обязательные поля и сохраните запись.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                        Как создать отчёт?
+                    </button>
+                </h2>
+                <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Перейдите в раздел "Отчёты", выберите тип отчёта, задайте параметры 
+                        и нажмите "Сгенерировать отчёт". Файл будет скачан автоматически.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                        Как изменить профиль?
+                    </button>
+                </h2>
+                <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Нажмите на своё имя в правом верхнем углу, выберите "Профиль" 
+                        и затем "Редактировать". Сохраните изменения после внесения.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <h2>Контакты поддержки</h2>
+        <p>
+            По вопросам использования системы обращайтесь через форму обратной связи 
+            или к администратору системы.
+        </p>
+    </div>
+</div>
+{% endblock %}

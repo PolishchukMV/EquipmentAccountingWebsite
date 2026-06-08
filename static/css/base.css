@@ -1,0 +1,95 @@
+/*
+ * Основные стили для системы учёта оборудования
+ * Author: Полищук Михаил Владимирович
+ */
+
+/* Общие стили */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.content-wrapper {
+    flex: 1;
+    padding: 20px 0;
+}
+
+/* Карточки */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: 8px 8px 0 0 !important;
+}
+
+/* Таблицы */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+/* Кнопки */
+.btn {
+    border-radius: 4px;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Навигация */
+.navbar-brand {
+    font-weight: bold;
+}
+
+/* Хлебные крошки */
+.breadcrumb {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+}
+
+.breadcrumb-item a {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+/* Уведомления */
+.alert {
+    border-radius: 4px;
+}
+
+/* Футер */
+footer {
+    background-color: #f8f9fa !important;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .content-wrapper {
+        padding: 10px 0;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+}
