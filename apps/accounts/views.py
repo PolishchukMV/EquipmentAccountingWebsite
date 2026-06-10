@@ -3,10 +3,10 @@
 """
 
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import CreateView, UpdateView, ListView, DetailView
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, TemplateView
 from django.contrib.auth.views import LoginView as DjangoLoginView, LogoutView as DjangoLogoutView
 from django.contrib.auth.views import PasswordChangeView as DjangoPasswordChangeView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -193,3 +193,30 @@ def mark_notification_read(request, pk):
     notification.mark_as_read()
     messages.success(request, 'Уведомление отмечено как прочитанное')
     return redirect('accounts:notifications')
+
+
+class AdminDashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """
+    Панель администратора с быстрыми ссылками на CRUD операции.
+    Доступна только суперпользователям.
+    """
+    
+    template_name = 'accounts/admin_dashboard.html'
+    
+    def test_func(self):
+        """Проверка: является ли пользователь суперпользователем"""
+        return self.request.user.is_superuser
+    
+    def get_context_data(self, **kwargs):
+        """Добавление контекстных данных"""
+        context = super().get_context_data(**kwargs)
+        # Здесь можно добавить статистику
+        from apps.equipment.models import Equipment
+        from apps.departments.models import Department
+        from apps.feedback.models import FeedbackMessage
+        
+        context['equipment_count'] = Equipment.objects.count()
+        context['department_count'] = Department.objects.count()
+        context['feedback_count'] = FeedbackMessage.objects.count()
+        context['user_count'] = CustomUser.objects.count()
+        return context

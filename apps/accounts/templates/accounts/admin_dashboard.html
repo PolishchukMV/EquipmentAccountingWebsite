@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block title %}Админ-панель - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .admin-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    }
+    
+    .admin-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+    
+    .admin-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .bg-equipment { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+    .bg-departments { background: linear-gradient(135deg, #10b981, #059669); }
+    .bg-users { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .bg-maintenance { background: linear-gradient(135deg, #4895ef, #3f37c9); }
+    .bg-reports { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .bg-settings { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4 animate__animated animate__fadeIn">
+    <div class="col-12">
+        <h1 class="display-6 mb-2">
+            <i class="bi bi-shield-lock me-2"></i>Панель администратора
+        </h1>
+        <p class="text-muted mb-0">Управление системой учёта оборудования</p>
+    </div>
+</div>
+
+<!-- Основная навигация -->
+<div class="row">
+    <div class="col-md-4 mb-4 animate__animated animate__fadeInUp">
+        <div class="card admin-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="admin-icon bg-equipment">
+                    <i class="bi bi-box"></i>
+                </div>
+                <h5 class="card-title mb-3">Оборудование</h5>
+                <p class="card-text text-muted">
+                    CRUD операции для управления оборудованием
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'equipment:equipment_list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-list me-2"></i>Список оборудования
+                    </a>
+                    <a href="{% url 'equipment:equipment_create' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-2"></i>Добавить оборудование
+                    </a>
+                    <a href="{% url 'equipment:category_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-tag me-2"></i>Категории
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+        <div class="card admin-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="admin-icon bg-departments">
+                    <i class="bi bi-building"></i>
+                </div>
+                <h5 class="card-title mb-3">Подразделения</h5>
+                <p class="card-text text-muted">
+                    Управление структурными подразделениями
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'departments:department_list' %}" class="btn btn-outline-success">
+                        <i class="bi bi-list me-2"></i>Список подразделений
+                    </a>
+                    <a href="{% url 'departments:department_create' %}" class="btn btn-success">
+                        <i class="bi bi-plus-circle me-2"></i>Добавить подразделение
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div class="card admin-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="admin-icon bg-users">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h5 class="card-title mb-3">Пользователи</h5>
+                <p class="card-text text-muted">
+                    Управление учётными записями и правами
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="/admin/users/customuser/" class="btn btn-outline-warning">
+                        <i class="bi bi-list me-2"></i>Список пользователей
+                    </a>
+                    <a href="/admin/users/customuser/add/" class="btn btn-warning">
+                        <i class="bi bi-plus-circle me-2"></i>Добавить пользователя
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <div class="card admin-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="admin-icon bg-maintenance">
+                    <i class="bi bi-wrench"></i>
+                </div>
+                <h5 class="card-title mb-3">Обслуживание</h5>
+                <p class="card-text text-muted">
+                    Управление ремонтами и обслуживанием
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'maintenance:maintenance_list' %}" class="btn btn-outline-info">
+                        <i class="bi bi-list me-2"></i>Список обслуживаний
+                    </a>
+                    <a href="{% url 'maintenance:maintenance_create' %}" class="btn btn-info text-white">
+                        <i class="bi bi-plus-circle me-2"></i>Добавить обслуживание
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+        <div class="card admin-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="admin-icon bg-reports">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h5 class="card-title mb-3">Отчёты</h5>
+                <p class="card-text text-muted">
+                    Генерация и экспорт отчётов
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'reports:reports_dashboard' %}" class="btn btn-outline-danger">
+                        <i class="bi bi-speedometer2 me-2"></i>Дашборд отчётов
+                    </a>
+                    <a href="/admin/reports/report/" class="btn btn-outline-secondary">
+                        <i class="bi bi-clock-history me-2"></i>История отчётов
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
+        <div class="card admin-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="admin-icon bg-settings">
+                    <i class="bi bi-gear"></i>
+                </div>
+                <h5 class="card-title mb-3">Настройки</h5>
+                <p class="card-text text-muted">
+                    Системные настройки и конфигурация
+                </p>
+                <div class="d-grid gap-2">
+                    <a href="/admin/" class="btn btn-outline-primary">
+                        <i class="bi bi-gear me-2"></i>Полная админ-панель
+                    </a>
+                    <a href="{% url 'feedback:feedback_list' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-chat-dots me-2"></i>Обратная связь
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Быстрая статистика -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle me-2"></i>Быстрая статистика
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h3 class="text-primary">{{ equipment_count|default:"-" }}</h3>
+                        <p class="text-muted mb-0">Оборудования</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-success">{{ department_count|default:"-" }}</h3>
+                        <p class="text-muted mb-0">Подразделений</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-warning">{{ user_count|default:"-" }}</h3>
+                        <p class="text-muted mb-0">Пользователей</p>
+                    </div>
+                    <div class="col-md-3">
+                        <h3 class="text-info">{{ feedback_count|default:"-" }}</h3>
+                        <p class="text-muted mb-0">Отзывов</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
