@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Ошибка запроса - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 text-center">
+        <h1 class="display-1 text-danger">400</h1>
+        <h2 class="mb-4">Ошибка запроса</h2>
+        <p class="lead mb-4">Неверный запрос. Пожалуйста, проверьте данные и попробуйте снова.</p>
+        <a href="/" class="btn btn-primary btn-lg">
+            <i class="bi bi-house me-2"></i>На главную
+        </a>
+    </div>
+</div>
+{% endblock %}

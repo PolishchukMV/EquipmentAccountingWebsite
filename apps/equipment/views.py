@@ -8,7 +8,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Q
+from django.utils.html import escape
 from .models import Equipment, Category, EquipmentLog
+from .forms import EquipmentForm
 
 
 class EquipmentListView(ListView):
@@ -48,7 +50,7 @@ class EquipmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
     """
     
     model = Equipment
-    fields = '__all__'
+    form_class = EquipmentForm
     template_name = 'equipment/equipment_form.html'
     success_url = reverse_lazy('equipment:equipment_list')
     permission_required = 'equipment.add_equipment'
@@ -64,6 +66,11 @@ class EquipmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
         Returns:
             redirect: Перенаправление на список оборудования
         """
+        # Escape данных для защиты от XSS
+        for field_name, field_value in form.cleaned_data.items():
+            if isinstance(field_value, str):
+                form.cleaned_data[field_name] = escape(field_value)
+        
         response = super().form_valid(form)
         EquipmentLog.objects.create(
             equipment=self.object,
@@ -73,6 +80,12 @@ class EquipmentCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateVie
         messages.success(self.request, 'Оборудование успешно создано')
         return response
 
+    def get_context_data(self, **kwargs):
+        """Добавляет контекст для формы."""
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Добавить оборудование'
+        return context
+
 
 class EquipmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
     """
@@ -80,7 +93,7 @@ class EquipmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
     """
     
     model = Equipment
-    fields = '__all__'
+    form_class = EquipmentForm
     template_name = 'equipment/equipment_form.html'
     success_url = reverse_lazy('equipment:equipment_list')
     permission_required = 'equipment.change_equipment'
@@ -96,6 +109,11 @@ class EquipmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         Returns:
             redirect: Перенаправление на список оборудования
         """
+        # Escape данных для защиты от XSS
+        for field_name, field_value in form.cleaned_data.items():
+            if isinstance(field_value, str):
+                form.cleaned_data[field_name] = escape(field_value)
+        
         response = super().form_valid(form)
         EquipmentLog.objects.create(
             equipment=self.object,
@@ -106,6 +124,12 @@ class EquipmentUpdateView(LoginRequiredMixin, PermissionRequiredMixin, UpdateVie
         )
         messages.success(self.request, 'Оборудование успешно обновлено')
         return response
+
+    def get_context_data(self, **kwargs):
+        """Добавляет контекст для формы."""
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Редактировать оборудование'
+        return context
 
 
 class EquipmentDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):

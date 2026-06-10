@@ -3,6 +3,7 @@
 """
 
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Category(models.Model):
@@ -79,11 +80,10 @@ class Equipment(models.Model):
     """
     
     STATUS_CHOICES = [
-        ('available', 'Доступно'),
-        ('in_use', 'В использовании'),
-        ('repair', 'В ремонте'),
-        ('written_off', 'Списано'),
-        ('lost', 'Утеряно'),
+        ('in_stock', 'На складе'),
+        ('in_use', 'В эксплуатации'),
+        ('in_repair', 'В ремонте'),
+        ('out_of_order', 'Неисправно'),
     ]
     
     inventory_number = models.CharField(
@@ -133,7 +133,11 @@ class Equipment(models.Model):
         null=True,
         blank=True,
         help_text='Месяцев',
-        verbose_name='Гарантийный срок'
+        verbose_name='Гарантийный срок',
+        validators=[
+            MinValueValidator(0, message='Гарантийный срок не может быть отрицательным'),
+            MaxValueValidator(1200, message='Гарантийный срок слишком большой'),
+        ]
     )
     status = models.CharField(
         max_length=20,
