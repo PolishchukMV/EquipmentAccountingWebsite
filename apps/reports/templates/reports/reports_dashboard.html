@@ -2,87 +2,152 @@
 
 {% block title %}Отчёты - {{ block.super }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .report-card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        overflow: hidden;
+        height: 100%;
+    }
+    
+    .report-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    }
+    
+    .report-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+    }
+    
+    .report-icon i {
+        font-size: 2.5rem;
+        color: white;
+    }
+    
+    .bg-inventory { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+    .bg-movement { background: linear-gradient(135deg, #10b981, #059669); }
+    .bg-maintenance { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .bg-status { background: linear-gradient(135deg, #4895ef, #3f37c9); }
+    .bg-financial { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .bg-history { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row mb-3">
-    <div class="col-md-6">
-        <h1>Отчёты</h1>
+<div class="row mb-4 animate__animated animate__fadeIn">
+    <div class="col-12">
+        <h1 class="display-6 mb-2">
+            <i class="bi bi-graph-up me-2"></i>Отчёты и аналитика
+        </h1>
+        <p class="text-muted mb-0">Сформированные отчёты по оборудованию и обслуживанию</p>
     </div>
 </div>
 
 <div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-box display-4 text-primary mb-3"></i>
-                <h5>Отчёт по оборудованию</h5>
-                <p class="text-muted">Список всего оборудования с детальной информацией</p>
-                <a href="{% url 'reports:inventory_report' %}" class="btn btn-primary">
-                    Сформировать
+    <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon bg-inventory">
+                    <i class="bi bi-box"></i>
+                </div>
+                <h5 class="card-title mb-3">Отчёт по оборудованию</h5>
+                <p class="card-text text-muted">
+                    Полный список оборудования с детальной информацией о каждой единице
+                </p>
+                <a href="{% url 'reports:inventory_report' %}" class="btn btn-primary w-100">
+                    <i class="bi bi-file-earmark-text me-2"></i>Сформировать
                 </a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-arrow-left-right display-4 text-success mb-3"></i>
-                <h5>Отчёт по перемещениям</h5>
-                <p class="text-muted">История перемещений оборудования между подразделениями</p>
-                <a href="{% url 'reports:movement_report' %}" class="btn btn-success">
-                    Сформировать
+    <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon bg-movement">
+                    <i class="bi bi-arrow-left-right"></i>
+                </div>
+                <h5 class="card-title mb-3">Отчёт по перемещениям</h5>
+                <p class="card-text text-muted">
+                    История перемещений оборудования между подразделениями и сотрудниками
+                </p>
+                <a href="{% url 'reports:movement_report' %}" class="btn btn-success w-100">
+                    <i class="bi bi-file-earmark-text me-2"></i>Сформировать
                 </a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-wrench display-4 text-warning mb-3"></i>
-                <h5>Отчёт по обслуживанию</h5>
-                <p class="text-muted">Статистика обслуживания и ремонтов оборудования</p>
-                <a href="{% url 'reports:maintenance_report' %}" class="btn btn-warning">
-                    Сформировать
+    <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon bg-maintenance">
+                    <i class="bi bi-wrench"></i>
+                </div>
+                <h5 class="card-title mb-3">Отчёт по обслуживанию</h5>
+                <p class="card-text text-muted">
+                    Статистика обслуживания и ремонтов оборудования с указанием затрат
+                </p>
+                <a href="{% url 'reports:maintenance_report' %}" class="btn btn-warning w-100">
+                    <i class="bi bi-file-earmark-text me-2"></i>Сформировать
                 </a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-speedometer2 display-4 text-info mb-3"></i>
-                <h5>Отчёт по статусам</h5>
-                <p class="text-muted">Распределение оборудования по статусам</p>
-                <a href="{% url 'reports:status_report' %}" class="btn btn-info">
-                    Сформировать
+    <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon bg-status">
+                    <i class="bi bi-speedometer2"></i>
+                </div>
+                <h5 class="card-title mb-3">Отчёт по статусам</h5>
+                <p class="card-text text-muted">
+                    Распределение оборудования по статусам с визуализацией
+                </p>
+                <a href="{% url 'reports:status_report' %}" class="btn btn-info w-100 text-white">
+                    <i class="bi bi-file-earmark-text me-2"></i>Сформировать
                 </a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-currency-dollar display-4 text-danger mb-3"></i>
-                <h5>Финансовый отчёт</h5>
-                <p class="text-muted">Стоимость оборудования и затрат на обслуживание</p>
-                <a href="{% url 'reports:financial_report' %}" class="btn btn-danger">
-                    Сформировать
+    <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon bg-financial">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <h5 class="card-title mb-3">Финансовый отчёт</h5>
+                <p class="card-text text-muted">
+                    Стоимость оборудования и затраты на обслуживание по подразделениям
+                </p>
+                <a href="{% url 'reports:financial_report' %}" class="btn btn-danger w-100">
+                    <i class="bi bi-file-earmark-text me-2"></i>Сформировать
                 </a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-clock-history display-4 text-secondary mb-3"></i>
-                <h5>История отчётов</h5>
-                <p class="text-muted">Просмотр ранее сформированных отчётов</p>
-                <a href="{% url 'reports:report_history' %}" class="btn btn-secondary">
-                    Просмотреть
+    <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
+        <div class="card report-card h-100">
+            <div class="card-body text-center p-4">
+                <div class="report-icon bg-history">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <h5 class="card-title mb-3">История отчётов</h5>
+                <p class="card-text text-muted">
+                    Просмотр и загрузка ранее сформированных отчётов
+                </p>
+                <a href="{% url 'reports:report_history' %}" class="btn btn-secondary w-100">
+                    <i class="bi bi-file-earmark-arrow-down me-2"></i>Просмотреть
                 </a>
             </div>
         </div>

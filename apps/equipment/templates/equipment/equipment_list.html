@@ -2,66 +2,168 @@
 
 {% block title %}Список оборудования - {{ block.super }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .equipment-card {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .equipment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+    }
+    
+    .equipment-photo {
+        height: 180px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .stats-box {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        text-align: center;
+    }
+    
+    .stats-box i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row mb-3">
-    <div class="col-md-6">
-        <h1>Оборудование</h1>
+<div class="row mb-4 animate__animated animate__fadeIn">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-6 mb-0">
+                    <i class="bi bi-box-seam me-2"></i>Оборудование
+                </h1>
+                <p class="text-muted mb-0">Управление всем оборудованием организации</p>
+            </div>
+            <div>
+                {% if user.is_authenticated and user.is_manager %}
+                    <a href="{% url 'equipment:equipment_create' %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-plus-circle me-2"></i>Добавить
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
-    <div class="col-md-6 text-end">
-        {% if user.is_authenticated and user.is_manager %}
-            <a href="{% url 'equipment:equipment_create' %}" class="btn btn-primary">
-                Добавить оборудование
-            </a>
-        {% endif %}
+</div>
+
+<!-- Статистика -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="stats-box">
+            <i class="bi bi-box"></i>
+            <h3 class="mb-0">{{ equipment_list|length }}</h3>
+            <small>Всего единиц</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-box" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <i class="bi bi-check-circle"></i>
+            <h3 class="mb-0">{{ equipment_list|length }}</h3>
+            <small>В эксплуатации</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-box" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+            <i class="bi bi-tools"></i>
+            <h3 class="mb-0">0</h3>
+            <small>В ремонте</small>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="stats-box" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+            <i class="bi bi-x-circle"></i>
+            <h3 class="mb-0">0</h3>
+            <small>Неисправно</small>
+        </div>
     </div>
 </div>
 
 <!-- Поиск и фильтрация -->
-<div class="filters-panel mb-4">
-    <form method="get" action="{% url 'equipment:equipment_search' %}" class="row g-3">
-        <div class="col-md-8">
-            <input type="text" name="q" class="form-control" placeholder="Поиск по инвентарному номеру, названию, серийному номеру...">
-        </div>
-        <div class="col-md-4">
-            <button type="submit" class="btn btn-secondary w-100">Поиск</button>
-        </div>
-    </form>
+<div class="card mb-4 animate__animated animate__fadeInUp">
+    <div class="card-header">
+        <i class="bi bi-search me-2"></i>Поиск и фильтрация
+    </div>
+    <div class="card-body">
+        <form method="get" action="{% url 'equipment:equipment_search' %}" class="row g-3">
+            <div class="col-md-8">
+                <div class="input-group">
+                    <span class="input-group-text bg-white">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" 
+                           name="q" 
+                           class="form-control" 
+                           placeholder="Поиск по инвентарному номеру, названию, серийному номеру...">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-search me-2"></i>Найти
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Список оборудования -->
 <div class="row">
     {% if equipment_list %}
         {% for equipment in equipment_list %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card equipment-item">
+            <div class="col-md-6 col-lg-4 mb-4 animate__animated animate__fadeIn">
+                <div class="card equipment-item h-100">
                     {% if equipment.photo %}
                         <img src="{{ equipment.photo.url }}" class="card-img-top equipment-photo" alt="{{ equipment.name }}">
                     {% else %}
-                        <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 200px;">
-                            <span class="text-white">Нет фото</span>
+                        <div class="card-img-top equipment-photo d-flex align-items-center justify-content-center">
+                            <i class="bi bi-cpu text-white" style="font-size: 4rem;"></i>
                         </div>
                     {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ equipment.name }}</h5>
-                        <p class="card-text">
-                            <strong>Инв. номер:</strong> {{ equipment.inventory_number }}<br>
-                            <strong>Категория:</strong> {{ equipment.category.name|default:"Не указана" }}<br>
-                            <strong>Статус:</strong> 
-                            <span class="status-badge status-{{ equipment.status }}">
-                                {{ equipment.get_status_display }}
-                            </span>
-                        </p>
-                        <a href="{% url 'equipment:equipment_detail' equipment.pk %}" class="btn btn-outline-primary btn-sm">
-                            Подробнее
-                        </a>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-3">{{ equipment.name }}</h5>
+                        <div class="flex-grow-1">
+                            <p class="card-text mb-2">
+                                <i class="bi bi-hash me-2 text-muted"></i>
+                                <strong>Инв. номер:</strong> {{ equipment.inventory_number }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <i class="bi bi-tag me-2 text-muted"></i>
+                                <strong>Категория:</strong> {{ equipment.category.name|default:"Не указана" }}
+                            </p>
+                            <p class="card-text mb-3">
+                                <i class="bi bi-info-circle me-2 text-muted"></i>
+                                <strong>Статус:</strong> 
+                                <span class="status-badge status-{{ equipment.status }}">
+                                    {{ equipment.get_status_display }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'equipment:equipment_detail' equipment.pk %}" class="btn btn-outline-primary">
+                                <i class="bi bi-eye me-2"></i>Подробнее
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         {% endfor %}
     {% else %}
-        <div class="col-12">
-            <div class="alert alert-info">
-                Оборудование не найдено. Добавьте новое оборудование.
+        <div class="col-12 animate__animated animate__fadeIn">
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                <div>
+                    Оборудование не найдено. Добавьте новое оборудование.
+                </div>
             </div>
         </div>
     {% endif %}
@@ -69,27 +171,37 @@
 
 <!-- Пагинация -->
 {% if is_paginated %}
-    <nav aria-label="Пагинация">
+    <nav aria-label="Пагинация" class="mt-4 animate__animated animate__fadeIn">
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page=1">&laquo; Первая</a>
+                    <a class="page-link" href="?page=1">
+                        <i class="bi bi-chevron-double-left"></i> Первая
+                    </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                        <i class="bi bi-chevron-left"></i> Назад
+                    </a>
                 </li>
             {% endif %}
             
             <li class="page-item active">
-                <span class="page-link">Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+                <span class="page-link">
+                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                </span>
             </li>
             
             {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                        Вперёд <i class="bi bi-chevron-right"></i>
+                    </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">
+                        Последняя <i class="bi bi-chevron-double-right"></i>
+                    </a>
                 </li>
             {% endif %}
         </ul>

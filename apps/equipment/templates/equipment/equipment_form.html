@@ -1,136 +1,323 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
 
-{% block title %}{% if object %}Редактирование{% else %}Создание{% endif %} оборудования - {{ block.super }}{% endblock %}
+{% block title %}{{ object|yesno:"Редактирование,Добавление" }} оборудования - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: 15px 15px 0 0;
+        padding: 2rem;
+    }
+    
+    .form-section {
+        border-left: 3px solid var(--primary-color);
+        padding-left: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .form-section-title {
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 2px solid #e5e7eb;
+        border-right: none;
+    }
+    
+    .input-group .form-control {
+        border: 2px solid #e5e7eb;
+        border-left: none;
+    }
+    
+    .input-group .form-control:focus {
+        border-color: var(--primary-color);
+    }
+    
+    .form-control.is-invalid, .form-select.is-invalid {
+        border-color: var(--danger-color);
+    }
+    
+    .invalid-feedback {
+        color: var(--danger-color);
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-lg-8">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">{% if object %}Редактирование{% else %}Добавление{% endif %} оборудования</h4>
-            </div>
-            <div class="card-body">
+<div class="row mb-4 animate__animated animate__fadeIn">
+    <div class="col-12">
+        <div class="form-header">
+            <h1 class="mb-2">
+                <i class="bi bi-box me-2"></i>
+                {{ object|yesno:"Редактирование,Добавление" }} оборудования
+            </h1>
+            <p class="mb-0 opacity-75">Заполните информацию о оборудовании</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card animate__animated animate__fadeInUp">
+            <div class="card-body p-4">
                 <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     
                     {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle me-2"></i>
+                            {% for error in form.non_field_errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endif %}
                     
                     <!-- Основная информация -->
-                    <h5 class="mb-3">Основная информация</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.inventory_number.id_for_label }}" class="form-label">
-                                Инвентарный номер *
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-info-circle me-2"></i>Основная информация
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.inventory_number.id_for_label }}" class="form-label">
+                                    <i class="bi bi-hash me-1"></i>Инвентарный номер <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-hash"></i></span>
+                                    {{ form.inventory_number|add_class:"form-control"|add_attr:"required" }}
+                                </div>
+                                {% if form.inventory_number.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.inventory_number.errors %}
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.name.id_for_label }}" class="form-label">
+                                    <i class="bi bi-card-heading me-1"></i>Название <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-card-heading"></i></span>
+                                    {{ form.name|add_class:"form-control"|add_attr:"required" }}
+                                </div>
+                                {% if form.name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.name.errors %}
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.category.id_for_label }}" class="form-label">
+                                    <i class="bi bi-tag me-1"></i>Категория
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                    {{ form.category|add_class:"form-select" }}
+                                </div>
+                                {% if form.category.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.category.errors %}
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.manufacturer.id_for_label }}" class="form-label">
+                                    <i class="bi bi-building me-1"></i>Производитель
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                    {{ form.manufacturer|add_class:"form-control" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.model.id_for_label }}" class="form-label">
+                                    <i class="bi bi-box me-1"></i>Модель
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-box"></i></span>
+                                    {{ form.model|add_class:"form-control" }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.serial_number.id_for_label }}" class="form-label">
+                                    <i class="bi bi-card-text me-1"></i>Серийный номер
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                    {{ form.serial_number|add_class:"form-control" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Статус и местоположение -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-geo-alt me-2"></i>Статус и местоположение
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.status.id_for_label }}" class="form-label">
+                                    <i class="bi bi-circle-fill me-1"></i>Статус <span class="text-danger">*</span>
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-circle-fill"></i></span>
+                                    {{ form.status|add_class:"form-select"|add_attr:"required" }}
+                                </div>
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.status.errors %}
+                                            <i class="bi bi-exclamation-circle me-1"></i>{{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.department.id_for_label }}" class="form-label">
+                                    <i class="bi bi-building me-1"></i>Подразделение
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-building"></i></span>
+                                    {{ form.department|add_class:"form-select" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.responsible_person.id_for_label }}" class="form-label">
+                                    <i class="bi bi-person me-1"></i>Ответственное лицо
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                    {{ form.responsible_person|add_class:"form-select" }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.location.id_for_label }}" class="form-label">
+                                    <i class="bi bi-geo-alt me-1"></i>Местоположение
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                                    {{ form.location|add_class:"form-control" }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Финансовая информация -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-currency-ruble me-2"></i>Финансовая информация
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.purchase_date.id_for_label }}" class="form-label">
+                                    <i class="bi bi-calendar me-1"></i>Дата покупки
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                                    {{ form.purchase_date|add_class:"form-control" }}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.purchase_price.id_for_label }}" class="form-label">
+                                    <i class="bi bi-currency-ruble me-1"></i>Цена покупки
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-currency-ruble"></i></span>
+                                    {{ form.purchase_price|add_class:"form-control" }}
+                                    <span class="input-group-text">руб.</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.warranty_period.id_for_label }}" class="form-label">
+                                    <i class="bi bi-shield-check me-1"></i>Гарантийный срок
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+                                    {{ form.warranty_period|add_class:"form-control" }}
+                                    <span class="input-group-text">мес.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Примечания и файлы -->
+                    <div class="form-section">
+                        <h5 class="form-section-title">
+                            <i class="bi bi-paperclip me-2"></i>Примечания и файлы
+                        </h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">
+                                <i class="bi bi-sticky me-1"></i>Примечания
                             </label>
-                            {{ form.inventory_number|add_class:"form-control" }}
-                            {% if form.inventory_number.errors %}
-                                <div class="text-danger">{{ form.inventory_number.errors }}</div>
-                            {% endif %}
+                            {{ form.notes|add_class:"form-control"|add_attr:"rows:3" }}
                         </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.name.id_for_label }}" class="form-label">
-                                Наименование *
-                            </label>
-                            {{ form.name|add_class:"form-control" }}
-                            {% if form.name.errors %}
-                                <div class="text-danger">{{ form.name.errors }}</div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.category.id_for_label }}" class="form-label">Категория</label>
-                            {{ form.category|add_class:"form-select" }}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.status.id_for_label }}" class="form-label">Статус</label>
-                            {{ form.status|add_class:"form-select" }}
-                        </div>
-                    </div>
-                    
-                    <!-- Технические данные -->
-                    <h5 class="mb-3 mt-4">Технические данные</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.serial_number.id_for_label }}" class="form-label">Серийный номер</label>
-                            {{ form.serial_number|add_class:"form-control" }}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.manufacturer.id_for_label }}" class="form-label">Производитель</label>
-                            {{ form.manufacturer|add_class:"form-control" }}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.photo.id_for_label }}" class="form-label">
+                                    <i class="bi bi-image me-1"></i>Фотография
+                                </label>
+                                {{ form.photo|add_class:"form-control" }}
+                                {% if object.photo %}
+                                    <small class="text-muted">Текущее фото: {{ object.photo.name }}</small>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.document.id_for_label }}" class="form-label">
+                                    <i class="bi bi-file-earmark me-1"></i>Документ
+                                </label>
+                                {{ form.document|add_class:"form-control" }}
+                                {% if object.document %}
+                                    <small class="text-muted">Текущий документ: {{ object.document.name }}</small>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.model.id_for_label }}" class="form-label">Модель</label>
-                            {{ form.model|add_class:"form-control" }}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.purchase_date.id_for_label }}" class="form-label">Дата покупки</label>
-                            {{ form.purchase_date|add_class:"form-control" }}
-                        </div>
-                    </div>
-                    
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.purchase_price.id_for_label }}" class="form-label">Цена покупки (руб.)</label>
-                            {{ form.purchase_price|add_class:"form-control" }}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.warranty_period.id_for_label }}" class="form-label">Гарантийный срок (месяцев)</label>
-                            {{ form.warranty_period|add_class:"form-control" }}
-                        </div>
-                    </div>
-                    
-                    <!-- Расположение и ответственность -->
-                    <h5 class="mb-3 mt-4">Расположение и ответственность</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.department.id_for_label }}" class="form-label">Подразделение</label>
-                            {{ form.department|add_class:"form-select" }}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.responsible_person.id_for_label }}" class="form-label">Ответственное лицо</label>
-                            {{ form.responsible_person|add_class:"form-select" }}
-                        </div>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.location.id_for_label }}" class="form-label">Местоположение</label>
-                        {{ form.location|add_class:"form-control" }}
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="{{ form.notes.id_for_label }}" class="form-label">Примечания</label>
-                        {{ form.notes|add_class:"form-control"|add_attr:"rows:3" }}
-                    </div>
-                    
-                    <!-- Файлы -->
-                    <h5 class="mb-3 mt-4">Файлы</h5>
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <label for="{{ form.photo.id_for_label }}" class="form-label">Фотография</label>
-                            {{ form.photo|add_class:"form-control" }}
-                        </div>
-                        <div class="col-md-6">
-                            <label for="{{ form.document.id_for_label }}" class="form-label">Документ</label>
-                            {{ form.document|add_class:"form-control" }}
-                        </div>
-                    </div>
-                    
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <a href="{% url 'equipment:equipment_list' %}" class="btn btn-secondary">
-                            Отмена
+                    <!-- Кнопки действий -->
+                    <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                        <a href="{% url 'equipment:equipment_list' %}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x-circle me-2"></i>Отмена
                         </a>
-                        <button type="submit" class="btn btn-primary">
-                            {% if object %}Сохранить{% else %}Создать{% endif %}
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check-circle me-2"></i>Сохранить
                         </button>
                     </div>
                 </form>
@@ -138,4 +325,17 @@
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Подсветка обязательных полей
+    document.addEventListener('DOMContentLoaded', function() {
+        const requiredFields = document.querySelectorAll('[required]');
+        requiredFields.forEach(field => {
+            field.setAttribute('aria-required', 'true');
+        });
+    });
+</script>
 {% endblock %}
