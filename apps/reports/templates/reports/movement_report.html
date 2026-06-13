@@ -3,47 +3,85 @@
 {% block title %}Отчёт по перемещениям - {{ block.super }}{% endblock %}
 
 {% block content %}
-<div class="row mb-3">
-    <div class="col-md-6">
-        <h1>Отчёт по перемещениям оборудования</h1>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'reports:reports_dashboard' %}">Отчёты</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Перемещения</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-6">
+                <i class="bi bi-arrow-left-right me-2"></i>Отчёт по перемещениям оборудования
+            </h1>
+        </div>
     </div>
-</div>
 
-<div class="card">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Дата</th>
-                        <th>Оборудование</th>
-                        <th>Откуда</th>
-                        <th>Куда</th>
-                        <th>Получатель</th>
-                        <th>Пользователь</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if movements %}
-                        {% for movement in movements %}
-                            <tr>
-                                <td>{{ movement.timestamp|date:"d.m.Y H:i" }}</td>
-                                <td>{{ movement.equipment.name }}</td>
-                                <td>{{ movement.from_department.name|default:"-" }}</td>
-                                <td>{{ movement.to_department.name|default:"-" }}</td>
-                                <td>{{ movement.received_by.get_full_name|default:"-" }}</td>
-                                <td>{{ movement.user.get_full_name|default:"-" }}</td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-table me-2"></i>История перемещений
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
                         <tr>
-                            <td colspan="6" class="text-center text-muted">
-                                Перемещений не найдено
-                            </td>
+                            <th>Дата назначения</th>
+                            <th>Оборудование</th>
+                            <th>Откуда (подразделение)</th>
+                            <th>Откуда (сотрудник)</th>
+                            <th>Куда (подразделение)</th>
+                            <th>Куда (сотрудник)</th>
+                            <th>Статус</th>
+                            <th>Создатель</th>
                         </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {% if movements %}
+                            {% for movement in movements %}
+                                <tr>
+                                    <td>{{ movement.assignment_date|date:"d.m.Y H:i" }}</td>
+                                    <td>
+                                        <strong>{{ movement.equipment.inventory_number }}</strong><br>
+                                        <small class="text-muted">{{ movement.equipment.name }}</small>
+                                    </td>
+                                    <td>
+                                        {{ movement.from_department.name|default:"-" }}
+                                    </td>
+                                    <td>
+                                        {{ movement.from_person.get_full_name|default:movement.from_person.username|default:"-" }}
+                                    </td>
+                                    <td>
+                                        <strong>{{ movement.to_department.name|default:"-" }}</strong>
+                                    </td>
+                                    <td>
+                                        {{ movement.to_person.get_full_name|default:movement.to_person.username|default:"-" }}
+                                    </td>
+                                    <td>
+                                        <span class="status-badge status-{{ movement.status }}">
+                                            {{ movement.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {{ movement.created_by.get_full_name|default:movement.created_by.username|default:"-" }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">
+                                    <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                                    Перемещений не найдено
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

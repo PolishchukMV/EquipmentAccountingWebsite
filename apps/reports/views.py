@@ -92,8 +92,8 @@ class MovementReportView(LoginRequiredMixin, PermissionRequiredMixin, SuperUserR
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['movements'] = Assignment.objects.select_related(
-            'equipment', 'from_department', 'to_department', 'user'
-        ).all().order_by('-timestamp')
+            'equipment', 'from_department', 'to_department', 'created_by'
+        ).all().order_by('-assignment_date')
         return context
 
 

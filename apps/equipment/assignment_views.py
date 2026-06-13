@@ -8,7 +8,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.utils import timezone
-from .models import Assignment, EquipmentLog
+from .models import Assignment, EquipmentLog, Equipment
 from .assignment_forms import AssignmentForm, AssignmentReturnForm
 
 
