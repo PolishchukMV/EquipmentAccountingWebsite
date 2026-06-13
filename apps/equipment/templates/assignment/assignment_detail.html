@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Назначение #{{ assignment.pk }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:equipment_list' %}">Оборудование</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:assignment_list' %}">Назначения</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">#{{ assignment.pk }}</li>
+                </ol>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="display-6 mb-0">
+                    <i class="bi bi-person-badge me-2"></i>Назначение оборудования
+                </h1>
+                <div>
+                    <a href="{% url 'equipment:assignment_list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-2"></i>Назад
+                    </a>
+                    {% if user.is_authenticated and user.is_manager %}
+                        <a href="{% url 'equipment:assignment_update' assignment.pk %}" class="btn btn-primary">
+                            <i class="bi bi-pencil me-2"></i>Редактировать
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Основная информация -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-info-circle me-2"></i>Основная информация
+                </div>
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%"><i class="bi bi-box me-2"></i>Оборудование:</th>
+                            <td>
+                                <strong>{{ assignment.equipment.inventory_number }}</strong> - {{ assignment.equipment.name }}<br>
+                                <a href="{% url 'equipment:equipment_detail' assignment.equipment.pk %}" class="text-primary">
+                                    <i class="bi bi-box-arrow-up-right me-1"></i>Перейти к оборудованию
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-building me-2"></i>Откуда (подразделение):</th>
+                            <td>
+                                {% if assignment.from_department %}
+                                    {{ assignment.from_department.name }}
+                                {% else %}
+                                    <span class="text-muted">Не указано</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-person me-2"></i>Откуда (сотрудник):</th>
+                            <td>
+                                {% if assignment.from_person %}
+                                    {{ assignment.from_person.get_full_name|default:assignment.from_person.username }}
+                                {% else %}
+                                    <span class="text-muted">Не указано</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-arrow-right me-2"></i>Куда (подразделение):</th>
+                            <td>
+                                {% if assignment.to_department %}
+                                    <strong>{{ assignment.to_department.name }}</strong>
+                                {% else %}
+                                    <span class="text-muted">Не указано</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-person-check me-2"></i>Куда (сотрудник):</th>
+                            <td>
+                                {% if assignment.to_person %}
+                                    {{ to_person.get_full_name|default:assignment.to_person.username }}
+                                {% else %}
+                                    <span class="text-muted">Не указано</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-calendar me-2"></i>Дата назначения:</th>
+                            <td>{{ assignment.assignment_date|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                        {% if assignment.return_date %}
+                        <tr>
+                            <th><i class="bi bi-calendar-check me-2"></i>Дата возврата:</th>
+                            <td>{{ assignment.return_date|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <th><i class="bi bi-flag me-2"></i>Статус:</th>
+                            <td>
+                                <span class="status-badge status-{{ assignment.status }}">
+                                    {{ assignment.get_status_display }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-card-text me-2"></i>Причина:</th>
+                            <td>{{ assignment.reason|linebreaks }}</td>
+                        </tr>
+                        <tr>
+                            <th><i class="bi bi-person me-2"></i>Создатель:</th>
+                            <td>
+                                {% if assignment.created_by %}
+                                    {{ assignment.created_by.get_full_name|default:assignment.created_by.username }}
+                                {% else %}
+                                    <span class="text-muted">Не указано</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Примечания -->
+            {% if assignment.document %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <i class="bi bi-file-earmark me-2"></i>Документы
+                </div>
+                <div class="card-body">
+                    <a href="{{ assignment.document.url }}" class="btn btn-outline-primary" download>
+                        <i class="bi bi-download me-2"></i>Скачать документ
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Быстрые действия -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <i class="bi bi-lightning me-2"></i>Быстрые действия
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated and user.is_manager %}
+                        {% if assignment.status == 'active' %}
+                            <a href="{% url 'equipment:assignment_return' assignment.pk %}" class="btn btn-success w-100 mb-2">
+                                <i class="bi bi-arrow-return-left me-2"></i>Вернуть оборудование
+                            </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'equipment:assignment_update' assignment.pk %}" class="btn btn-primary w-100 mb-2">
+                            <i class="bi bi-pencil me-2"></i>Редактировать
+                        </a>
+                        
+                        <a href="{% url 'equipment:assignment_delete' assignment.pk %}" class="btn btn-danger w-100"
+                           onclick="return confirm('Вы уверены, что хотите удалить это назначение?')">
+                            <i class="bi bi-trash me-2"></i>Удалить
+                        </a>
+                    {% else %}
+                        <div class="text-muted text-center py-3">
+                            <i class="bi bi-lock-circle display-4 mb-3"></i>
+                            <p>Требуется авторизация для управления назначениями</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Статистика оборудования -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <i class="bi bi-graph-up me-2"></i>Оборудование
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <strong>Категория:</strong><br>
+                        {{ assignment.equipment.category.name|default:"Не указана" }}
+                    </p>
+                    <p class="mb-2">
+                        <strong>Статус оборудования:</strong><br>
+                        <span class="status-badge status-{{ assignment.equipment.status }}">
+                            {{ assignment.equipment.get_status_display }}
+                        </span>
+                    </p>
+                    <p class="mb-0">
+                        <strong>Местоположение:</strong><br>
+                        {{ assignment.equipment.location|default:"Не указано" }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

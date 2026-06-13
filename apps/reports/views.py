@@ -2,9 +2,11 @@
 Представления для приложения отчётов.
 """
 
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 from django.views.generic import ListView, TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.conf import settings
 from django.db.models import Count, Sum
 from apps.equipment.models import Equipment, Category, Assignment, EquipmentLog
 from apps.maintenance.models import Maintenance
@@ -14,14 +16,39 @@ from .utils import generate_equipment_excel
 from .docx_utils import generate_equipment_docx
 
 
-class ReportsDashboardView(TemplateView):
+class SuperUserRequiredMixin:
+    """Миксин для разрешения доступа суперпользователям."""
+    
+    def has_permission(self):
+        """Разрешаем доступ суперпользователям и пользователям с permission."""
+        if self.request.user.is_superuser:
+            return True
+        # Проверяем наличие permission через PermissionRequiredMixin
+        if hasattr(self, 'permission_required'):
+            return self.request.user.has_perm(self.permission_required)
+        return True
+
+
+class ReportsDashboardView(LoginRequiredMixin, PermissionRequiredMixin, SuperUserRequiredMixin, TemplateView):
     """Дашборд отчётов."""
     template_name = 'reports/reports_dashboard.html'
+    permission_required = 'reports.view_report'
+    raise_exception = False
+    
+    def handle_no_permission(self):
+        """Перенаправляем на главную при отсутствии прав."""
+        return redirect(settings.LOGIN_URL if not self.request.user.is_authenticated else '/')
 
 
-class InventoryReportView(LoginRequiredMixin, TemplateView):
+class InventoryReportView(LoginRequiredMixin, PermissionRequiredMixin, SuperUserRequiredMixin, TemplateView):
     """Отчёт по инвентаризации."""
     template_name = 'reports/inventory_report.html'
+    permission_required = 'reports.view_report'
+    raise_exception = False
+
+    def handle_no_permission(self):
+        """Перенаправляем на главную при отсутствии прав."""
+        return redirect(settings.LOGIN_URL if not self.request.user.is_authenticated else '/')
 
     def get(self, request, *args, **kwargs):
         export_format = request.GET.get('format')
@@ -52,9 +79,15 @@ class InventoryReportView(LoginRequiredMixin, TemplateView):
         return self.render_to_response(context)
 
 
-class MovementReportView(LoginRequiredMixin, TemplateView):
+class MovementReportView(LoginRequiredMixin, PermissionRequiredMixin, SuperUserRequiredMixin, TemplateView):
     """Отчёт по перемещениям."""
     template_name = 'reports/movement_report.html'
+    permission_required = 'reports.view_report'
+    raise_exception = False
+
+    def handle_no_permission(self):
+        """Перенаправляем на главную при отсутствии прав."""
+        return redirect(settings.LOGIN_URL if not self.request.user.is_authenticated else '/')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -64,24 +97,36 @@ class MovementReportView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class MaintenanceReportView(LoginRequiredMixin, TemplateView):
+class MaintenanceReportView(LoginRequiredMixin, PermissionRequiredMixin, SuperUserRequiredMixin, TemplateView):
     """Отчёт по обслуживанию."""
     template_name = 'reports/maintenance_report.html'
+    permission_required = 'reports.view_report'
+    raise_exception = False
+
+    def handle_no_permission(self):
+        """Перенаправляем на главную при отсутствии прав."""
+        return redirect(settings.LOGIN_URL if not self.request.user.is_authenticated else '/')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['maintenances'] = Maintenance.objects.select_related(
             'equipment'
-        ).all().order_by('-start_date')
+        ).all().order_by('-scheduled_date')
         context['total_cost'] = Maintenance.objects.aggregate(
             total=Sum('cost')
         )['total'] or 0
         return context
 
 
-class StatusReportView(LoginRequiredMixin, TemplateView):
+class StatusReportView(LoginRequiredMixin, PermissionRequiredMixin, SuperUserRequiredMixin, TemplateView):
     """Отчёт по статусам оборудования."""
     template_name = 'reports/status_report.html'
+    permission_required = 'reports.view_report'
+    raise_exception = False
+
+    def handle_no_permission(self):
+        """Перенаправляем на главную при отсутствии прав."""
+        return redirect(settings.LOGIN_URL if not self.request.user.is_authenticated else '/')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -93,9 +138,15 @@ class StatusReportView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class FinancialReportView(LoginRequiredMixin, TemplateView):
+class FinancialReportView(LoginRequiredMixin, PermissionRequiredMixin, SuperUserRequiredMixin, TemplateView):
     """Финансовый отчёт."""
     template_name = 'reports/financial_report.html'
+    permission_required = 'reports.view_report'
+    raise_exception = False
+
+    def handle_no_permission(self):
+        """Перенаправляем на главную при отсутствии прав."""
+        return redirect(settings.LOGIN_URL if not self.request.user.is_authenticated else '/')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -114,12 +165,20 @@ class GenerateReportView(TemplateView):
     template_name = 'reports/generate_report.html'
 
 
-class ReportHistoryView(LoginRequiredMixin, ListView):
+class ReportHistoryView(LoginRequiredMixin, SuperUserRequiredMixin, ListView):
     """История отчётов."""
     template_name = 'reports/report_history.html'
     context_object_name = 'reports'
+    raise_exception = False
 
+    def handle_no_permission(self):
+        """Перенаправляем на главную при отсутствии прав."""
+        return redirect(settings.LOGIN_URL if not self.request.user.is_authenticated else '/')
+    
     def get_queryset(self):
+        # Суперпользователи видят все отчёты, другие только свои
+        if self.request.user.is_superuser:
+            return Report.objects.all().order_by('-generated_at')
         return Report.objects.filter(
-            user=self.request.user
-        ).order_by('-created_at')
+            generated_by=self.request.user
+        ).order_by('-generated_at')

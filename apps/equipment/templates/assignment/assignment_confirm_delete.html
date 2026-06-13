@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Удалить назначение - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:equipment_list' %}">Оборудование</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:assignment_list' %}">Назначения</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Удаление</li>
+                </ol>
+            </nav>
+
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-exclamation-triangle me-2"></i>Подтверждение удаления
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Внимание!</strong> Это действие нельзя отменить.
+                    </div>
+
+                    <p>Вы уверены, что хотите удалить следующее назначение?</p>
+
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Оборудование:</strong> {{ assignment.equipment.name }}</p>
+                            <p class="mb-2"><strong>Инвентарный номер:</strong> {{ assignment.equipment.inventory_number }}</p>
+                            <p class="mb-2"><strong>Куда:</strong> {{ assignment.to_department.name|default:assignment.to_person.username }}</p>
+                            <p class="mb-2"><strong>Дата назначения:</strong> {{ assignment.assignment_date|date:"d.m.Y H:i" }}</p>
+                            <p class="mb-0"><strong>Статус:</strong> {{ assignment.get_status_display }}</p>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash me-2"></i>Да, удалить
+                            </button>
+                            <a href="{% url 'equipment:assignment_detail' assignment.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

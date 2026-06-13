@@ -196,7 +196,7 @@
                         <label class="form-label fw-bold">Изменить статус:</label>
                         <select name="status" class="form-select mb-3">
                             {% for value, label in equipment.STATUS_CHOICES %}
-                                <option value="{{ value }}">{{ label }}</option>
+                                <option value="{{ value }}" {% if value == equipment.status %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
                         <button type="submit" class="btn btn-success w-100">

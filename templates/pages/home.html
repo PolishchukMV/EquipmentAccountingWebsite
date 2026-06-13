@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron bg-light p-5 rounded">
+                <h1 class="display-4">Добро пожаловать в систему учёта оборудования</h1>
+                <p class="lead">ООО «ПроИнфоСервис»</p>
+                <hr class="my-4">
+                <p>Система для эффективного управления и отслеживания оборудования компании.</p>
+                <a class="btn btn-primary btn-lg" href="{% url 'equipment:equipment_list' %}" role="button">Перейти к оборудованию</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Оборудование</h5>
+                    <p class="card-text">Просмотр и управление всем оборудованием компании.</p>
+                    <a href="{% url 'equipment:equipment_list' %}" class="btn btn-outline-primary">Список оборудования</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Подразделения</h5>
+                    <p class="card-text">Управление структурой подразделений компании.</p>
+                    <a href="{% url 'departments:department_list' %}" class="btn btn-outline-primary">Подразделения</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Отчёты</h5>
+                    <p class="card-text">Генерация отчётов и аналитика.</p>
+                    <a href="{% url 'reports:reports_dashboard' %}" class="btn btn-outline-primary">Отчёты</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Быстрые ссылки</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="{% url 'equipment:equipment_create' %}">Добавить новое оборудование</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'equipment:equipment_search' %}">Поиск оборудования</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'maintenance:maintenance_calendar' %}">Календарь обслуживания</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{% url 'feedback:feedback_create' %}">Обратная связь</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

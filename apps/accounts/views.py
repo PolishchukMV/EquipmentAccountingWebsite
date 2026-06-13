@@ -59,6 +59,10 @@ class LogoutView(DjangoLogoutView):
     template_name = 'accounts/logout.html'
     next_page = 'equipment:equipment_list'
 
+    def get(self, request, *args, **kwargs):
+        """Разрешаем GET запросы для перенаправления на POST форму"""
+        return self.post(request, *args, **kwargs)
+
 
 class RegisterView(CreateView):
     """

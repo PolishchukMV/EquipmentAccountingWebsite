@@ -173,6 +173,9 @@ LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'equipment:equipment_list'
 LOGOUT_REDIRECT_URL = 'equipment:equipment_list'
 
+# Кастомная модель пользователя
+AUTH_USER_MODEL = 'accounts.CustomUser'
+
 # Язык и часовой пояс
 LANGUAGE_CODE = 'ru-ru'
 TIME_ZONE = 'Europe/Moscow'

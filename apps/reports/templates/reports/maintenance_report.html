@@ -42,30 +42,31 @@
             <table class="table table-striped">
                 <thead class="table-dark">
                     <tr>
-                        <th>Дата начала</th>
-                        <th>Оборудование</th>
-                        <th>Тип</th>
-                        <th>Статус</th>
-                        <th>Исполнитель</th>
-                        <th>Стоимость</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if maintenances %}
-                        {% for maintenance in maintenances %}
-                            <tr>
-                                <td>{{ maintenance.start_date|date:"d.m.Y" }}</td>
-                                <td>{{ maintenance.equipment.name }}</td>
-                                <td>{{ maintenance.get_type_display }}</td>
-                                <td>
-                                    <span class="badge badge-{{ maintenance.get_status_display }}">
-                                        {{ maintenance.get_status_display }}
-                                    </span>
-                                </td>
-                                <td>{{ maintenance.service_provider|default:"-" }}</td>
-                                <td>{{ maintenance.cost|default:"-" }}</td>
-                            </tr>
-                        {% endfor %}
+                        <tr>
+                            <th>Дата планирования</th>
+                            <th>Оборудование</th>
+                            <th>Тип</th>
+                            <th>Статус</th>
+                            <th>Исполнитель</th>
+                            <th>Стоимость</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if maintenances %}
+                            {% for maintenance in maintenances %}
+                                <tr>
+                                    <td>{{ maintenance.scheduled_date|date:"d.m.Y" }}</td>
+                                    <td>{{ maintenance.equipment.name }}</td>
+                                    <td>{{ maintenance.get_type_display }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ maintenance.get_status_display }}">
+                                            {{ maintenance.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ maintenance.contractor|default:"-" }}</td>
+                                    <td>{{ maintenance.cost|default:"-" }}</td>
+                                </tr>
+                            {% endfor %}
                     {% else %}
                         <tr>
                             <td colspan="6" class="text-center text-muted">

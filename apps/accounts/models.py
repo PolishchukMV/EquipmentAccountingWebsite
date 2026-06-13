@@ -83,9 +83,23 @@ class CustomUser(AbstractUser):
         verbose_name_plural = 'Пользователи'
         ordering = ['-created_at']
     
+    # Поля для аутентификации
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['email']
+    
+    @classmethod
+    def get_by_natural_key(cls, username):
+        """Получить пользователя по username."""
+        return cls.objects.get(username=username)
+    
     def __str__(self):
         """Возвращает строковое представление пользователя (полное имя)."""
-        return f'{self.get_full_name() or self.username}'
+        full_name = self.get_full_name()
+        return full_name if full_name else self.username
+    
+    def can_authenticate(self):
+        """Разрешает ли пользователю аутентификацию."""
+        return self.is_active
     
     def is_admin(self):
         """Проверяет, является ли пользователь администратором."""

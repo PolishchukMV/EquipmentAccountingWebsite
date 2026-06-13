@@ -9,8 +9,12 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db.models import Q
 from django.utils.html import escape
-from .models import Equipment, Category, EquipmentLog
+from django.http import HttpResponse
+from django.conf import settings
+from .models import Equipment, Category, EquipmentLog, Assignment
 from .forms import EquipmentForm
+from .utils import generate_equipment_excel, export_equipment_to_xlsx, export_equipment_to_docx
+from io import BytesIO
 
 
 class EquipmentListView(ListView):
@@ -193,7 +197,7 @@ class EquipmentSearchView(ListView):
         return queryset
 
 
-class EquipmentFilterView(ListView):
+class EquipmentFilterView(LoginRequiredMixin, ListView):
     """
     Фильтрация оборудования по статусу и категории.
     """
@@ -202,11 +206,21 @@ class EquipmentFilterView(ListView):
     template_name = 'equipment/equipment_filter.html'
     context_object_name = 'equipment_list'
     paginate_by = 10
+    permission_required = 'equipment.view_equipment'
     
+    def get_context_data(self, **kwargs):
+        """Добавляет списки категорий и подразделений в контекст."""
+        context = super().get_context_data(**kwargs)
+        context['categories'] = Category.objects.all()
+        from apps.departments.models import Department
+        context['departments'] = Department.objects.all()
+        context['status_choices'] = Equipment.STATUS_CHOICES
+        return context
+
     def get_queryset(self):
         """
         Фильтрует оборудование по переданным параметрам.
-        
+
         Returns:
             QuerySet: Отфильтрованный набор записей
         """
@@ -222,7 +236,7 @@ class EquipmentFilterView(ListView):
         if department:
             queryset = queryset.filter(department_id=department)
         
-        return queryset
+        return queryset.order_by('-created_at')
 
 
 class EquipmentStatusView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -233,6 +247,7 @@ class EquipmentStatusView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
     model = Equipment
     template_name = 'equipment/equipment_status.html'
     permission_required = 'equipment.change_equipment'
+    context_object_name = 'equipment'
     
     def post(self, request, pk):
         """
@@ -249,6 +264,12 @@ class EquipmentStatusView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
         new_status = request.POST.get('status')
         
         if new_status:
+            # Проверяем валидность статуса
+            valid_statuses = [choice[0] for choice in Equipment.STATUS_CHOICES]
+            if new_status not in valid_statuses:
+                messages.error(request, 'Неверный статус')
+                return redirect('equipment:equipment_detail', pk=pk)
+            
             old_status = equipment.status
             equipment.status = new_status
             equipment.save()
@@ -261,6 +282,8 @@ class EquipmentStatusView(LoginRequiredMixin, PermissionRequiredMixin, DetailVie
                 new_value=new_status
             )
             messages.success(request, f'Статус изменён на {equipment.get_status_display()}')
+        else:
+            messages.error(request, 'Статус не указан')
         
         return redirect('equipment:equipment_detail', pk=pk)
 
@@ -326,3 +349,100 @@ def not_found(request, exception):
 def server_error(request):
     """Обработчик ошибки 500."""
     return render(request, 'errors/500.html', status=500)
+
+
+def export_equipment_xlsx(request):
+    """
+    Экспорт всего оборудования в Excel.
+    
+    GET: /equipment/export/xlsx/
+    """
+    queryset = Equipment.objects.select_related(
+        'category', 'department', 'responsible_person'
+    ).all()
+    return export_equipment_to_xlsx(queryset)
+
+
+def export_equipment_docx(request):
+    """
+    Экспорт всего оборудования в Word.
+    
+    GET: /equipment/export/docx/
+    """
+    queryset = Equipment.objects.select_related(
+        'category', 'department', 'responsible_person'
+    ).all()
+    # Для Word экспортируем как отдельную карточку каждого оборудования
+    if not queryset.exists():
+        messages.warning(request, 'Нет оборудования для экспорта')
+        return redirect('equipment:equipment_list')
+    
+    # Экспортируем первое оборудование для примера
+    return export_equipment_to_docx(queryset.first())
+
+
+def export_equipment_detail(request, pk):
+    """
+    Экспорт конкретной единицы оборудования.
+    
+    GET: /equipment/<pk>/export/
+    """
+    equipment = get_object_or_404(Equipment, pk=pk)
+    return export_equipment_to_docx(equipment)
+
+
+def import_equipment(request):
+    """
+    Импорт оборудования из Excel/CSV.
+    
+    GET: страница загрузки файла
+    POST: обработка файла
+    """
+    if request.method == 'POST':
+        file = request.FILES.get('file')
+        if not file:
+            messages.error(request, 'Файл не выбран')
+            return render(request, 'equipment/equipment_import.html')
+        
+        # Проверка расширения
+        allowed_extensions = ['xlsx', 'xls', 'csv']
+        ext = file.name.split('.')[-1].lower()
+        if ext not in allowed_extensions:
+            messages.error(request, f'Недопустимый формат. Разрешены: {", ".join(allowed_extensions)}')
+            return render(request, 'equipment/equipment_import.html')
+        
+        try:
+            # Простая обработка Excel файла
+            import openpyxl
+            wb = openpyxl.load_workbook(file)
+            ws = wb.active
+            
+            imported_count = 0
+            for row_num, row in enumerate(ws.iter_rows(values_only=True), start=2):
+                if row_num == 2 and row[0] == 'Инвентарный номер':
+                    # Пропускаем заголовок
+                    continue
+                if row[0]:  # Инвентарный номер
+                    try:
+                        Equipment.objects.create(
+                            inventory_number=str(row[0]),
+                            name=row[1] if len(row) > 1 else '',
+                            category_id=row[2] if len(row) > 2 and row[2] else None,
+                            serial_number=row[3] if len(row) > 3 else '',
+                            manufacturer=row[4] if len(row) > 4 else '',
+                            model=row[5] if len(row) > 5 else '',
+                            status='in_stock',
+                        )
+                        imported_count += 1
+                    except Exception as e:
+                        messages.warning(request, f'Ошибка при обработке строки {row_num}: {str(e)}')
+            
+            messages.success(request, f'Импортировано записей: {imported_count}')
+            return redirect('equipment:equipment_list')
+            
+        except Exception as e:
+            messages.error(request, f'Ошибка при импорте: {str(e)}')
+            return render(request, 'equipment/equipment_import.html')
+    
+    # GET запрос - показываем форму загрузки
+    return render(request, 'equipment/equipment_import.html')

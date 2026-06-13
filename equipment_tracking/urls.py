@@ -15,12 +15,15 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # Приложения проекта
-    path('', include('apps.equipment.urls')),
+    path('equipment/', include('apps.equipment.urls')),
     path('accounts/', include('apps.accounts.urls')),
     path('departments/', include('apps.departments.urls')),
     path('maintenance/', include('apps.maintenance.urls')),
     path('reports/', include('apps.reports.urls')),
     path('feedback/', include('apps.feedback.urls')),
+    
+    # Главная страница (перенаправление на список оборудования)
+    path('', TemplateView.as_view(template_name='pages/home.html'), name='home'),
     
     # Статические страницы
     path('about/', TemplateView.as_view(template_name='pages/about.html'), name='about'),

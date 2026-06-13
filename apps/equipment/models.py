@@ -80,10 +80,11 @@ class Equipment(models.Model):
     """
     
     STATUS_CHOICES = [
-        ('in_stock', 'На складе'),
-        ('in_use', 'В эксплуатации'),
+        ('available', 'Доступно'),
+        ('in_use', 'В использовании'),
         ('in_repair', 'В ремонте'),
-        ('out_of_order', 'Неисправно'),
+        ('out_of_order', 'Списано'),
+        ('lost', 'Утеряно'),
     ]
     
     inventory_number = models.CharField(

@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Фильтрация оборудования - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:equipment_list' %}">Оборудование</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Фильтрация</li>
+                </ol>
+            </nav>
+            
+            <h1 class="display-6">
+                <i class="bi bi-funnel me-2"></i>Фильтрация оборудования
+            </h1>
+        </div>
+    </div>
+
+    <!-- Форма фильтрации -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-funnel me-2"></i>Фильтры
+        </div>
+        <div class="card-body">
+            <form method="get" action="{% url 'equipment:equipment_filter' %}">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label for="id_status" class="form-label fw-bold">Статус:</label>
+                        <select name="status" id="id_status" class="form-select">
+                            <option value="">Все статусы</option>
+                            {% for value, label in status_choices %}
+                                <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="id_category" class="form-label fw-bold">Категория:</label>
+                        <select name="category" id="id_category" class="form-select">
+                            <option value="">Все категории</option>
+                            {% for category in categories %}
+                                <option value="{{ category.id }}" {% if request.GET.category|add:"0" == category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <label for="id_department" class="form-label fw-bold">Подразделение:</label>
+                        <select name="department" id="id_department" class="form-select">
+                            <option value="">Все подразделения</option>
+                            {% for department in departments %}
+                                <option value="{{ department.id }}" {% if request.GET.department|add:"0" == department.id %}selected{% endif %}>
+                                    {{ department.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-funnel me-2"></i>Применить фильтры
+                    </button>
+                    <a href="{% url 'equipment:equipment_filter' %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle me-2"></i>Сбросить
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Результаты фильтрации -->
+    <div class="row">
+        {% if equipment_list %}
+            <div class="col-12 mb-3">
+                <p class="text-muted">Найдено записей: <strong>{{ equipment_list.paginator.count }}</strong></p>
+            </div>
+            
+            {% for equipment in equipment_list %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100">
+                        {% if equipment.photo %}
+                            <img src="{{ equipment.photo.url }}" class="card-img-top" alt="{{ equipment.name }}" style="height: 180px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top d-flex align-items-center justify-content-center bg-primary text-white" style="height: 180px;">
+                                <i class="bi bi-cpu" style="font-size: 4rem;"></i>
+                            </div>
+                        {% endif %}
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ equipment.name }}</h5>
+                            <p class="card-text mb-2">
+                                <strong>Инв. номер:</strong> {{ equipment.inventory_number }}
+                            </p>
+                            <p class="card-text mb-2">
+                                <strong>Категория:</strong> {{ equipment.category.name|default:"Не указана" }}
+                            </p>
+                            <p class="card-text mb-3">
+                                <strong>Статус:</strong> 
+                                <span class="status-badge status-{{ equipment.status }}">
+                                    {{ equipment.get_status_display }}
+                                </span>
+                            </p>
+                            <a href="{% url 'equipment:equipment_detail' equipment.pk %}" class="btn btn-outline-primary">
+                                <i class="bi bi-eye me-2"></i>Подробнее
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-3 fs-4"></i>
+                    <div>
+                        По выбранным фильтрам ничего не найдено.
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if is_paginated and equipment_list.has_other_pages %}
+        <nav aria-label="Пагинация" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if equipment_list.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?status={{ request.GET.status }}&category={{ request.GET.category }}&department={{ request.GET.department }}&page=1">
+                            <i class="bi bi-chevron-double-left"></i> Первая
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?status={{ request.GET.status }}&category={{ request.GET.category }}&department={{ request.GET.department }}&page={{ equipment_list.previous_page_number }}">
+                            <i class="bi bi-chevron-left"></i> Назад
+                        </a>
+                    </li>
+                {% endif %}
+                
+                <li class="page-item active">
+                    <span class="page-link">
+                        Страница {{ equipment_list.number }} из {{ equipment_list.paginator.num_pages }}
+                    </span>
+                </li>
+                
+                {% if equipment_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?status={{ request.GET.status }}&category={{ request.GET.category }}&department={{ request.GET.department }}&page={{ equipment_list.next_page_number }}">
+                            Вперёд <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?status={{ request.GET.status }}&category={{ request.GET.category }}&department={{ request.GET.department }}&page={{ equipment_list.paginator.num_pages }}">
+                            Последняя <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'equipment:equipment_list' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-2"></i>К списку оборудования
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Импорт оборудования - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:equipment_list' %}">Оборудование</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Импорт</li>
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="bi bi-file-earmark-arrow-up me-2"></i>
+                        Импорт оборудования
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Формат файла Excel/CSV:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Столбец A: Инвентарный номер</li>
+                            <li>Столбец B: Наименование</li>
+                            <li>Столбец C: Категория (ID)</li>
+                            <li>Столбец D: Серийный номер</li>
+                            <li>Столбец E: Производитель</li>
+                            <li>Столбец F: Модель</li>
+                        </ul>
+                    </div>
+
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="file" class="form-label fw-bold">
+                                <i class="bi bi-cloud-upload me-2"></i>Выберите файл
+                            </label>
+                            <input type="file" 
+                                   class="form-control" 
+                                   id="file" 
+                                   name="file" 
+                                   accept=".xlsx,.xls,.csv"
+                                   required>
+                            <div class="form-text">
+                                Разрешены форматы: XLSX, XLS, CSV (макс. 10 МБ)
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-upload me-2"></i>Импортировать
+                            </button>
+                            <a href="{% url 'equipment:equipment_list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

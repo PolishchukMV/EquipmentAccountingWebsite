@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Изменить статус - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:equipment_list' %}">Оборудование</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:equipment_detail' equipment.pk %}">{{ equipment.name }}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Изменить статус</li>
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-arrow-repeat me-2"></i>Изменить статус
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Оборудование:</strong> {{ equipment.name }}<br>
+                        <strong>Инвентарный номер:</strong> {{ equipment.inventory_number }}<br>
+                        <strong>Текущий статус:</strong> 
+                        <span class="status-badge status-{{ equipment.status }}">
+                            {{ equipment.get_status_display }}
+                        </span>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="id_status" class="form-label fw-bold">
+                                <i class="bi bi-flag me-2"></i>Новый статус:
+                            </label>
+                            <select name="status" id="id_status" class="form-select" required>
+                                <option value="">Выберите статус</option>
+                                {% for value, label in equipment.STATUS_CHOICES %}
+                                    <option value="{{ value }}" {% if value == equipment.status %}selected{% endif %}>
+                                        {{ label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-2"></i>Сохранить
+                            </button>
+                            <a href="{% url 'equipment:equipment_detail' equipment.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Вернуть оборудование - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:equipment_list' %}">Оборудование</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:assignment_list' %}">Назначения</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'equipment:assignment_detail' assignment.pk %}">Назначение #{{ assignment.pk }}</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">Возврат</li>
+                </ol>
+            </nav>
+
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-arrow-return-left me-2"></i>Возврат оборудования
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <strong>Оборудование:</strong> {{ assignment.equipment.name }}<br>
+                        <strong>Инвентарный номер:</strong> {{ assignment.equipment.inventory_number }}<br>
+                        <strong>Назначено:</strong> {{ assignment.to_department.name|default:assignment.to_person.username }}<br>
+                        <strong>Дата назначения:</strong> {{ assignment.assignment_date|date:"d.m.Y H:i" }}
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-4">
+                            <label for="{{ form.reason.id_for_label }}" class="form-label fw-bold">
+                                Причина возврата (необязательно):
+                            </label>
+                            {{ form.reason }}
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-2"></i>Подтвердить возврат
+                            </button>
+                            <a href="{% url 'equipment:assignment_detail' assignment.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
