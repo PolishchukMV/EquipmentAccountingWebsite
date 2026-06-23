@@ -29,14 +29,14 @@ load_dotenv()
 
 import os
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-change-me-in-production-4_o#p=#mf(-)gl#%y*e8z%la$@ioe2u3=etaj)z6dqk85904zj')
 
-# SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = os.environ.get('DJANGO_DEBUG', 'False').lower() == 'true'
 
-# SECURITY: Ограничьте ALLOWED_HOSTS в production
-ALLOWED_HOSTS = os.environ.get('DJANGO_ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver').split(',')
+
+ALLOWED_HOSTS = ['*']
 
 # SECURITY SETTINGS
 SECURE_SSL_REDIRECT = os.environ.get('DJANGO_SECURE_SSL_REDIRECT', 'False').lower() == 'true'
